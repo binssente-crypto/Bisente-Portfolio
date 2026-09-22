@@ -1,0 +1,12 @@
+---
+# seed
+title: "Cisco certificate 1"
+date: "2022-10-15"
+skills: ["Security"]
+related: []
+kind: "certificate"
+issuer: "Cisco Networking Academy"
+cluster: { id: "cisco", label: "Cisco" }
+highlight: false
+---
+Placeholder. Replace with your own content.
