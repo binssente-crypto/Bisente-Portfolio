@@ -136,211 +136,6 @@ const loop = `M${nowX - 27} 47C${nowX - 25} 32 ${nowX + 27} 30 ${nowX + 31} 49C$
 ---
 
 <section class="route-map" data-route-map aria-labelledby="rm-heading">
-  <div class="rm-top-header">
-    <div class="rm-header-left">
-      <h2 id="rm-heading" class="rm-section-title">Route Map</h2>
-    </div>
-
-    <!-- Mode Switcher Tabs -->
-    <div class="rm-view-tabs" role="tablist" aria-label="Journey view switch">
-      <button
-        type="button"
-        role="tab"
-        id="tab-map"
-        class="rm-tab-btn is-active"
-        aria-selected="true"
-        aria-controls="panel-map"
-        data-view="map"
-      >
-        <svg width="15" height="15" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round" aria-hidden="true">
-          <circle cx="6" cy="19" r="3"></circle>
-          <path d="M9 19h8.5a3.5 3.5 0 0 0 0-7h-11a3.5 3.5 0 0 1 0-7H15"></path>
-          <circle cx="18" cy="5" r="3"></circle>
-        </svg>
-        <span>Route Map</span>
-      </button>
-
-      <button
-        type="button"
-        role="tab"
-        id="tab-list"
-        class="rm-tab-btn"
-        aria-selected="false"
-        aria-controls="panel-list"
-        data-view="list"
-      >
-        <svg width="15" height="15" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round" aria-hidden="true">
-          <line x1="8" y1="6" x2="21" y2="6"></line>
-          <line x1="8" y1="12" x2="21" y2="12"></line>
-          <line x1="8" y1="18" x2="21" y2="18"></line>
-          <line x1="3" y1="6" x2="3.01" y2="6"></line>
-          <line x1="3" y1="12" x2="3.01" y2="12"></line>
-          <line x1="3" y1="18" x2="3.01" y2="18"></line>
-        </svg>
-        <span>List View</span>
-      </button>
-    </div>
-  </div>
-
-  <figure class="rm-figure" id="panel-map" role="tabpanel" aria-labelledby="tab-map">
-    <div class="rm-figure-frame">
-      <svg class="rm-svg" viewBox={`0 0 ${W} ${H}`} aria-hidden="true" focusable="false">
-        <defs>
-          <mask id="rm-reveal" maskUnits="userSpaceOnUse" x="0" y="0" width={W} height={H}>
-            <path class="rm-wipe" d={`M0 ${H / 2}H${W}`} pathLength="1" fill="none" stroke="#fff" stroke-width={H} />
-          </mask>
-          <!-- Neon Glow Filters -->
-          <filter id="glow-orange" x="-20%" y="-20%" width="140%" height="140%">
-            <feDropShadow dx="0" dy="0" stdDeviation="3" flood-color="#FF6B00" flood-opacity="0.6"/>
-          </filter>
-          <filter id="glow-emerald" x="-20%" y="-20%" width="140%" height="140%">
-            <feDropShadow dx="0" dy="0" stdDeviation="3" flood-color="#00FF9D" flood-opacity="0.6"/>
-          </filter>
-          <filter id="glow-cyan" x="-20%" y="-20%" width="140%" height="140%">
-            <feDropShadow dx="0" dy="0" stdDeviation="3" flood-color="#00E5FF" flood-opacity="0.6"/>
-          </filter>
-        </defs>
-
-        <!-- Track Background Grid Lines -->
-        <g class="rm-grid-lines">
-          {layout.lanes.map((l) => (
-            <line class="rm-grid-lane" x1={layout.laneX1} y1={l.y} x2={nowX} y2={l.y} />
-          ))}
-        </g>
-
-        <!-- Glowing Active Neon Rails -->
-        <g class="rm-lines" mask="url(#rm-reveal)">
-          {layout.lanes.map((l) => (
-            <line class={`rm-line rm-${l.line}`} x1={layout.laneX1} y1={l.y} x2={nowX} y2={l.y} />
-          ))}
-        </g>
-
-        <!-- Cyber Circuit Connectors -->
-        <g class="rm-connectors">
-          {layout.connectors.map((d) => (
-            <path d={d} />
-          ))}
-        </g>
-
-        <!-- Futuristic Temporal "Now" Line -->
-        <g class="rm-now">
-          <line x1={nowX} y1="72" x2={nowX} y2="334" />
-          <text x={nowX} y="54" text-anchor="middle" class="rm-now-text">LIVE NOW</text>
-          <path class="rm-loop" pathLength="1" d={loop} />
-        </g>
-
-        <!-- Station Waypoints -->
-        <g class="rm-stations">
-          {layout.stations.map((s) => (
-            <g
-              class={`rm-station rm-${s.line}`}
-              data-key={s.key}
-              data-x={s.x}
-              data-y={s.y}
-              data-skills={skillsOf(s.skills)}
-              data-caption={s.caption}
-              style={`--d:${s.delay}ms`}
-            >
-              <a href={s.href} tabindex="-1">
-                {s.shape === 'circle' ? (
-                  <circle cx={s.x} cy={s.y} r={s.hw} />
-                ) : (
-                  <rect
-                    x={+(s.x - s.hw).toFixed(1)}
-                    y={s.y - s.hh}
-                    width={s.hw * 2}
-                    height={s.hh * 2}
-                    rx={s.shape === 'pill' ? s.hh : 4}
-                  />
-                )}
-              </a>
-            </g>
-          ))}
-        </g>
-
-        <!-- Slanted Canvas Labels (/) -->
-        <g class="rm-labels">
-          {layout.stations
-            .filter((s) => s.label)
-            .map((s) => (
-              s.shape === 'pill' ? (
-                <text
-                  class="rm-label rm-pill-label"
-                  x={s.x}
-                  y={s.y + 4.5}
-                  text-anchor="middle"
-                  data-skills={skillsOf(s.skills)}
-                  style={`--d:${s.delay}ms`}
-                >
-                  {s.label}
-                </text>
-              ) : (
-                <text
-                  class="rm-label rm-slanted-label"
-                  x={s.x + 3}
-                  y={s.y - (s.hh + 6)}
-                  text-anchor="start"
-                  transform={`rotate(-40 ${s.x + 3} ${s.y - (s.hh + 6)})`}
-                  data-skills={skillsOf(s.skills)}
-                  style={`--d:${s.delay}ms`}
-                >
-                  {s.label}
-                </text>
-              )
-            ))}
-          {layout.lanes.map((l) => (
-            <g class="rm-lane-legend">
-              <text class="rm-title" x="16" y={l.y - 4}>
-                {l.title}
-              </text>
-              <text class="rm-sub" x="16" y={l.y + 14}>
-                {l.subtitle}
-              </text>
-            </g>
-          ))}
-        </g>
-
-        <!-- Active Targeting Marker -->
-        <g class="rm-marker">
-          <circle r="16" class="rm-marker-outer" />
-          <circle r="5" class="rm-marker-inner" />
-        </g>
-      </svg>
-    </div>
-
-    <!-- Active Station HUD Info Bar -->
-    <figcaption class="rm-caption" data-rm="caption">
-      <div class="caption-content">
-        <span class="caption-pulse"></span>
-        <span class="caption-text">Select or hover over any track waypoint to inspect mission details.</span>
-      </div>
-    </figcaption>
-  </figure>
-
-  <!-- Alternate List View -->
-  <div class="rm-lists" id="panel-list" role="tabpanel" aria-labelledby="tab-list" hidden>
-    {layout.lanes.map((l) => (
-      <section class={`rm-list rm-${l.line}`}>
-        <h3>{l.title}</h3>
-        <ul>
-          {layout.stations
-            .filter((s) => s.line === l.line)
-            .reverse()
-            .map((s) => (
-              <li data-skills={skillsOf(s.skills)} data-key={s.key}>
-                <a href={s.href} data-key={s.key}>
-                  <b>{s.title}</b>
-                  <small>{s.when}</small>
-                </a>
-              </li>
-            ))}
-        </ul>
-      </section>
-    ))}
-  </div>
-
-  <p class="sr-only" role="status" data-rm="status"></p>
-
   <!-- SKILLS SECTION (Kanban Style without outer container) -->
   <div class="skills-section">
     <div class="skills-header-row">
@@ -605,6 +400,210 @@ const loop = `M${nowX - 27} 47C${nowX - 25} 32 ${nowX + 27} 30 ${nowX + 31} 49C$
       ))}
     </div>
   </div>
+
+  <div class="rm-top-header">
+    <div class="rm-header-left">
+      <h2 id="rm-heading" class="rm-section-title">Route Map</h2>
+    </div>
+
+    <!-- Mode Switcher Tabs -->
+    <div class="rm-view-tabs" role="tablist" aria-label="Journey view switch">
+      <button
+        type="button"
+        role="tab"
+        id="tab-map"
+        class="rm-tab-btn is-active"
+        aria-selected="true"
+        aria-controls="panel-map"
+        data-view="map"
+      >
+        <svg width="15" height="15" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round" aria-hidden="true">
+          <circle cx="6" cy="19" r="3"></circle>
+          <path d="M9 19h8.5a3.5 3.5 0 0 0 0-7h-11a3.5 3.5 0 0 1 0-7H15"></path>
+          <circle cx="18" cy="5" r="3"></circle>
+        </svg>
+        <span>Route Map</span>
+      </button>
+
+      <button
+        type="button"
+        role="tab"
+        id="tab-list"
+        class="rm-tab-btn"
+        aria-selected="false"
+        aria-controls="panel-list"
+        data-view="list"
+      >
+        <svg width="15" height="15" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round" aria-hidden="true">
+          <line x1="8" y1="6" x2="21" y2="6"></line>
+          <line x1="8" y1="12" x2="21" y2="12"></line>
+          <line x1="8" y1="18" x2="21" y2="18"></line>
+          <line x1="3" y1="6" x2="3.01" y2="6"></line>
+          <line x1="3" y1="12" x2="3.01" y2="12"></line>
+          <line x1="3" y1="18" x2="3.01" y2="18"></line>
+        </svg>
+        <span>List View</span>
+      </button>
+    </div>
+  </div>
+
+  <figure class="rm-figure" id="panel-map" role="tabpanel" aria-labelledby="tab-map">
+    <div class="rm-figure-frame">
+      <svg class="rm-svg" viewBox={`0 0 ${W} ${H}`} aria-hidden="true" focusable="false">
+        <defs>
+          <mask id="rm-reveal" maskUnits="userSpaceOnUse" x="0" y="0" width={W} height={H}>
+            <path class="rm-wipe" d={`M0 ${H / 2}H${W}`} pathLength="1" fill="none" stroke="#fff" stroke-width={H} />
+          </mask>
+          <!-- Neon Glow Filters -->
+          <filter id="glow-orange" x="-20%" y="-20%" width="140%" height="140%">
+            <feDropShadow dx="0" dy="0" stdDeviation="3" flood-color="#FF6B00" flood-opacity="0.6"/>
+          </filter>
+          <filter id="glow-emerald" x="-20%" y="-20%" width="140%" height="140%">
+            <feDropShadow dx="0" dy="0" stdDeviation="3" flood-color="#00FF9D" flood-opacity="0.6"/>
+          </filter>
+          <filter id="glow-cyan" x="-20%" y="-20%" width="140%" height="140%">
+            <feDropShadow dx="0" dy="0" stdDeviation="3" flood-color="#00E5FF" flood-opacity="0.6"/>
+          </filter>
+        </defs>
+
+        <!-- Track Background Grid Lines -->
+        <g class="rm-grid-lines">
+          {layout.lanes.map((l) => (
+            <line class="rm-grid-lane" x1={layout.laneX1} y1={l.y} x2={nowX} y2={l.y} />
+          ))}
+        </g>
+
+        <!-- Glowing Active Neon Rails -->
+        <g class="rm-lines" mask="url(#rm-reveal)">
+          {layout.lanes.map((l) => (
+            <line class={`rm-line rm-${l.line}`} x1={layout.laneX1} y1={l.y} x2={nowX} y2={l.y} />
+          ))}
+        </g>
+
+        <!-- Cyber Circuit Connectors -->
+        <g class="rm-connectors">
+          {layout.connectors.map((d) => (
+            <path d={d} />
+          ))}
+        </g>
+
+        <!-- Futuristic Temporal "Now" Line -->
+        <g class="rm-now">
+          <line x1={nowX} y1="72" x2={nowX} y2="334" />
+          <text x={nowX} y="54" text-anchor="middle" class="rm-now-text">LIVE NOW</text>
+          <path class="rm-loop" pathLength="1" d={loop} />
+        </g>
+
+        <!-- Station Waypoints -->
+        <g class="rm-stations">
+          {layout.stations.map((s) => (
+            <g
+              class={`rm-station rm-${s.line}`}
+              data-key={s.key}
+              data-shape={s.shape}
+              data-x={s.x}
+              data-y={s.y}
+              data-skills={skillsOf(s.skills)}
+              data-caption={s.caption}
+              style={`--d:${s.delay}ms`}
+            >
+              <a href={s.href} tabindex="-1">
+                {s.shape === 'circle' ? (
+                  <circle cx={s.x} cy={s.y} r={s.hw} />
+                ) : (
+                  <rect
+                    x={+(s.x - s.hw).toFixed(1)}
+                    y={s.y - s.hh}
+                    width={s.hw * 2}
+                    height={s.hh * 2}
+                    rx={s.shape === 'pill' ? s.hh : 4}
+                  />
+                )}
+                {s.shape === 'pill' && (
+                  <text
+                    class="rm-pill-label"
+                    x={s.x}
+                    y={s.y + 4.5}
+                    text-anchor="middle"
+                  >
+                    {s.label}
+                  </text>
+                )}
+              </a>
+            </g>
+          ))}
+        </g>
+
+        <!-- Slanted Canvas Labels (/) -->
+        <g class="rm-labels">
+          {layout.stations
+            .filter((s) => s.label && s.shape !== 'pill')
+            .map((s) => (
+              <text
+                class="rm-label rm-slanted-label"
+                x={s.x + 2}
+                y={s.y - (s.hh + 8)}
+                text-anchor="start"
+                transform={`rotate(-58 ${s.x + 2} ${s.y - (s.hh + 8)})`}
+                data-skills={skillsOf(s.skills)}
+                style={`--d:${s.delay}ms`}
+              >
+                {s.label}
+              </text>
+            ))}
+          {layout.lanes.map((l) => (
+            <g class="rm-lane-legend">
+              <text class="rm-title" x="16" y={l.y - 4}>
+                {l.title}
+              </text>
+              <text class="rm-sub" x="16" y={l.y + 14}>
+                {l.subtitle}
+              </text>
+            </g>
+          ))}
+        </g>
+
+        <!-- Active Targeting Marker -->
+        <g class="rm-marker">
+          <circle r="16" class="rm-marker-outer" />
+          <circle r="5" class="rm-marker-inner" />
+        </g>
+      </svg>
+    </div>
+
+    <!-- Active Station HUD Info Bar -->
+    <figcaption class="rm-caption" data-rm="caption">
+      <div class="caption-content">
+        <span class="caption-pulse"></span>
+        <span class="caption-text">Select or hover over any track waypoint to inspect mission details.</span>
+      </div>
+    </figcaption>
+  </figure>
+
+  <!-- Alternate List View -->
+  <div class="rm-lists" id="panel-list" role="tabpanel" aria-labelledby="tab-list" hidden>
+    {layout.lanes.map((l) => (
+      <section class={`rm-list rm-${l.line}`}>
+        <h3>{l.title}</h3>
+        <ul>
+          {layout.stations
+            .filter((s) => s.line === l.line)
+            .reverse()
+            .map((s) => (
+              <li data-skills={skillsOf(s.skills)} data-key={s.key}>
+                <a href={s.href} data-key={s.key}>
+                  <b>{s.title}</b>
+                  <small>{s.when}</small>
+                </a>
+              </li>
+            ))}
+        </ul>
+      </section>
+    ))}
+  </div>
+
+  <p class="sr-only" role="status" data-rm="status"></p>
+
 </section>
 
 <style is:global>
@@ -683,19 +682,13 @@ const loop = `M${nowX - 27} 47C${nowX - 25} 32 ${nowX + 27} 30 ${nowX + 31} 49C$
   margin: 1.5rem 0 0;
 }
 .rm-figure-frame {
-  background: rgba(11, 16, 28, 0.95);
-  border: 1px solid rgba(0, 229, 255, 0.2);
+  background: #FFFFFF;
+  border: 1px solid var(--rail);
   border-radius: 16px;
-  padding: 1rem 0.5rem;
-  box-shadow: 0 12px 36px rgba(0, 0, 0, 0.6), inset 0 0 40px rgba(0, 229, 255, 0.03);
+  padding: 1.25rem 0.75rem 1rem;
+  box-shadow: 0 4px 24px rgba(15, 34, 51, 0.06);
   position: relative;
   overflow: hidden;
-}
-.rm-figure-frame::before {
-  content: '';
-  position: absolute;
-  top: 0; left: 0; right: 0; height: 1px;
-  background: linear-gradient(90deg, transparent, rgba(0, 229, 255, 0.6), transparent);
 }
 
 .rm-svg {
@@ -706,95 +699,90 @@ const loop = `M${nowX - 27} 47C${nowX - 25} 32 ${nowX + 27} 30 ${nowX + 31} 49C$
 }
 .rm-svg text {
   font: 700 12px var(--font);
-  fill: #E2E8F0;
+  fill: #0F2233;
   pointer-events: none;
 }
 .rm-svg .rm-title {
   font-size: 14px;
-  letter-spacing: 0.03em;
+  letter-spacing: 0.02em;
   font-weight: 800;
-  fill: #F8FAFC;
+  fill: #0F2233;
 }
 .rm-svg .rm-sub {
-  font-weight: 500;
-  font-size: 11.5px;
-  fill: var(--ink-3);
+  font-weight: 600;
+  font-size: 11px;
+  fill: #64748B;
 }
 .rm-slanted-label {
-  font-size: 10px !important;
+  font-size: 9.5px !important;
   font-weight: 700 !important;
-  fill: #F1F5F9 !important;
+  fill: #1E293B !important;
   letter-spacing: 0.02em;
+  text-rendering: geometricPrecision;
 }
 .rm-pill-label {
-  font-size: 12px !important;
+  font-size: 11.5px !important;
   font-weight: 800 !important;
-  fill: #FFFFFF !important;
+  fill: #0F172A !important;
 }
 
 .rm-grid-lane {
-  stroke: rgba(255, 255, 255, 0.06);
-  stroke-width: 12;
+  stroke: #F1F5F9;
+  stroke-width: 14;
   stroke-linecap: round;
 }
 
 .rm-line {
   stroke: var(--lane);
-  stroke-width: 6;
+  stroke-width: 5;
   stroke-linecap: round;
-  filter: drop-shadow(0 0 4px var(--glow));
 }
 .rm-line.rm-notes {
-  stroke-dasharray: 12 6;
+  stroke-dasharray: 10 5;
   stroke-linecap: butt;
 }
 .rm-connectors path {
   fill: none;
-  stroke: rgba(148, 163, 184, 0.45);
-  stroke-width: 2.5;
+  stroke: #94A3B8;
+  stroke-width: 2;
   stroke-linejoin: round;
-  stroke-dasharray: 4 2;
+  stroke-dasharray: 4 3;
 }
 .rm-now line {
-  stroke: #00E5FF;
+  stroke: #0284C7;
   stroke-width: 1.5;
   stroke-dasharray: 4 4;
   opacity: 0.8;
 }
 .rm-now-text {
-  font-size: 12px !important;
+  font-size: 11px !important;
   font-weight: 800 !important;
-  fill: #00E5FF !important;
+  fill: #0284C7 !important;
   letter-spacing: 0.08em;
 }
 .rm-loop {
   fill: none;
-  stroke: #00E5FF;
+  stroke: #0284C7;
   stroke-width: 1.5;
   stroke-linecap: round;
   opacity: 0.7;
 }
 
 .rm-station {
-  transform-box: fill-box;
-  transform-origin: center;
   cursor: pointer;
 }
 .rm-station :is(circle, rect) {
-  fill: #0B101D;
+  fill: #FFFFFF;
   stroke: var(--lane);
-  stroke-width: 2.5;
-  transition: all 0.15s ease;
+  stroke-width: 3;
+  transition: stroke 0.15s ease, fill 0.15s ease, stroke-width 0.15s ease;
 }
 .rm-station:hover :is(circle, rect),
 .rm-station.is-active :is(circle, rect) {
   fill: var(--lane);
-  stroke: #FFF;
+  stroke: #FFFFFF;
   stroke-width: 3.5;
-  filter: drop-shadow(0 0 8px var(--lane));
-}
-.rm-station.is-active {
-  transform: scale(1.3);
+  filter: drop-shadow(0 0 6px var(--lane));
 }
 .rm-station[data-dim], .rm-label[data-dim] {
   opacity: 0.15;
@@ -802,14 +790,14 @@ const loop = `M${nowX - 27} 47C${nowX - 25} 32 ${nowX + 27} 30 ${nowX + 31} 49C$
 
 .rm-marker-outer {
   fill: none;
-  stroke: #00E5FF;
+  stroke: #0284C7;
   stroke-width: 2;
   stroke-dasharray: 4 2;
   animation: reticle-spin 6s linear infinite;
   transform-origin: center;
 }
 .rm-marker-inner {
-  fill: #00E5FF;
+  fill: #0284C7;
 }
 @keyframes reticle-spin {
   from { transform: rotate(0deg); }
@@ -832,24 +820,25 @@ const loop = `M${nowX - 27} 47C${nowX - 25} 32 ${nowX + 27} 30 ${nowX + 31} 49C$
   display: flex;
   align-items: center;
   gap: 0.65rem;
-  background: rgba(13, 19, 34, 0.85);
+  background: #F8FAFC;
   border: 1px solid var(--rail);
   border-radius: 8px;
   padding: 0.65rem 1rem;
-  font-size: 0.95rem;
+  font-size: 0.92rem;
   color: var(--ink);
 }
 .caption-pulse {
   width: 8px;
   height: 8px;
   border-radius: 50%;
-  background: var(--learning);
-  box-shadow: 0 0 8px var(--learning);
+  background: #059669;
+  box-shadow: 0 0 6px #059669;
 }
 
 /* ---- SKILLS SECTION (KANBAN STYLE WITHOUT CONTAINER) ---- */
 .skills-section {
-  margin-top: 2.75rem;
+  margin-top: 0;
+  margin-bottom: 2.25rem;
 }
 
 .skills-header-row {
@@ -995,14 +984,10 @@ const loop = `M${nowX - 27} 47C${nowX - 25} 32 ${nowX + 27} 30 ${nowX + 31} 49C$
 
 .skill-pill-btn[aria-pressed='true'] {
   background: var(--col-accent);
-  color: #000;
+  color: #0F172A;
   border-color: var(--col-accent);
-  box-shadow: 0 0 10px var(--col-accent);
+  box-shadow: 0 2px 8px rgba(0, 0, 0, 0.12);
   font-weight: 700;
-}
-
-.skill-pill-btn[aria-pressed='true'] svg {
-  filter: brightness(0);
 }
 
 .pill-icon {
@@ -1020,12 +1005,12 @@ const loop = `M${nowX - 27} 47C${nowX - 25} 32 ${nowX + 27} 30 ${nowX + 31} 49C$
   grid-template-columns: repeat(3, minmax(0, 1fr));
   gap: 2rem;
   margin: 1.5rem 0 0;
-  background: rgba(11, 16, 28, 0.95);
-  border: 1px solid rgba(0, 229, 255, 0.2);
+  background: #FFFFFF;
+  border: 1px solid var(--rail);
   border-radius: 16px;
   padding: 1.75rem 2rem;
-  box-shadow: 0 12px 36px rgba(0, 0, 0, 0.6), inset 0 0 40px rgba(0, 229, 255, 0.03);
-  color: #F1F5F9;
+  box-shadow: 0 4px 24px rgba(15, 34, 51, 0.06);
+  color: var(--ink);
 }
 
 .rm-list h3 {
@@ -1053,14 +1038,14 @@ const loop = `M${nowX - 27} 47C${nowX - 25} 32 ${nowX + 27} 30 ${nowX + 31} 49C$
   align-items: baseline;
   min-height: 40px;
   padding: 0.45rem 0.5rem;
-  color: #F1F5F9;
+  color: var(--ink);
   text-decoration: none;
   border-radius: 6px;
   transition: all 0.15s ease;
 }
 
 .rm-list a:hover {
-  background: rgba(255, 255, 255, 0.05);
+  background: var(--surface-2);
 }
 
 .rm-list a::before {
@@ -1072,7 +1057,7 @@ const loop = `M${nowX - 27} 47C${nowX - 25} 32 ${nowX + 27} 30 ${nowX + 31} 49C$
   height: 10px;
   border: 2px solid var(--lane);
   border-radius: 50%;
-  background: #0B101C;
+  background: #FFFFFF;
   transition: transform 0.15s ease, background 0.15s ease, box-shadow 0.15s ease;
 }
 
@@ -1086,7 +1071,7 @@ const loop = `M${nowX - 27} 47C${nowX - 25} 32 ${nowX + 27} 30 ${nowX + 31} 49C$
 }
 
 .rm-list a:hover::before {
-  transform: scale(1.3);
+  transform: scale(1.2);
   background: var(--lane);
 }
 
@@ -1094,34 +1079,34 @@ const loop = `M${nowX - 27} 47C${nowX - 25} 32 ${nowX + 27} 30 ${nowX + 31} 49C$
   grid-column: 2;
   font-weight: 600;
   font-size: 0.95rem;
-  color: #F8FAFC;
+  color: var(--ink);
 }
 
 .rm-list a:hover b {
-  color: #FFFFFF;
+  color: var(--ink);
   text-decoration: underline;
 }
 
 .rm-list small {
   grid-column: 2;
-  color: #94A3B8;
+  color: var(--ink-3);
   font-size: 0.825rem;
   margin-top: 0.15rem;
 }
 
 /* ---- SKILL FILTER LIGHT UP & DIMMING ---- */
 .rm-station[data-dim] {
-  opacity: 0.12 !important;
+  opacity: 0.15 !important;
   transition: opacity 0.25s ease;
 }
 
 .rm-label[data-dim] {
-  opacity: 0.08 !important;
+  opacity: 0.1 !important;
   transition: opacity 0.25s ease;
 }
 
 .rm-connectors.has-skill-active {
-  opacity: 0.15;
+  opacity: 0.18;
   transition: opacity 0.25s ease;
 }
 
@@ -1134,50 +1119,74 @@ const loop = `M${nowX - 27} 47C${nowX - 25} 32 ${nowX + 27} 30 ${nowX + 31} 49C$
 .rm-station.is-skill-match circle {
   fill: #FFFFFF !important;
   stroke: var(--lane) !important;
-  stroke-width: 4px !important;
-  filter: drop-shadow(0 0 10px var(--lane)) drop-shadow(0 0 4px var(--lane));
-  animation: station-glow-pulse 1.8s infinite ease-in-out;
+  stroke-width: 4.5px !important;
+  filter: drop-shadow(0 0 6px var(--lane));
 }
 
-.rm-station.is-skill-match rect {
+.rm-station[data-shape='square'].is-skill-match rect {
   fill: #FFFFFF !important;
   stroke: var(--lane) !important;
-  stroke-width: 3.5px !important;
-  filter: drop-shadow(0 0 10px var(--lane)) drop-shadow(0 0 4px var(--lane));
-  animation: station-glow-pulse 1.8s infinite ease-in-out;
+  stroke-width: 4px !important;
+  filter: drop-shadow(0 0 6px var(--lane));
+}
+
+.rm-station[data-shape='pill'] :is(rect) {
+  fill: #FFFFFF;
+  stroke: var(--lane);
+  stroke-width: 2.5;
+  transition: stroke 0.15s ease, fill 0.15s ease, stroke-width 0.15s ease;
+}
+
+.rm-station[data-shape='pill'] .rm-pill-label {
+  font-size: 11.5px !important;
+  font-weight: 800 !important;
+  fill: #0F172A;
+  pointer-events: none;
+  transition: fill 0.15s ease;
+}
+
+.rm-station[data-shape='pill']:hover :is(rect),
+.rm-station[data-shape='pill'].is-active :is(rect),
+.rm-station[data-shape='pill'].is-skill-match :is(rect) {
+  fill: var(--lane) !important;
+  stroke: #FFFFFF !important;
+  stroke-width: 3px !important;
+  filter: drop-shadow(0 0 8px var(--lane)) !important;
+}
+
+.rm-station[data-shape='pill']:hover .rm-pill-label,
+.rm-station[data-shape='pill'].is-active .rm-pill-label,
+.rm-station[data-shape='pill'].is-skill-match .rm-pill-label {
+  fill: #FFFFFF !important;
+}
+
+.rm-station[data-shape='pill']:hover ~ .rm-marker,
+.rm-station[data-shape='pill'].is-active ~ .rm-marker {
+  opacity: 0 !important;
 }
 
 .rm-label.is-skill-match {
-  fill: #FFFFFF !important;
+  fill: #0F172A !important;
   font-weight: 800 !important;
   opacity: 1 !important;
 }
 
-@keyframes station-glow-pulse {
-  0%, 100% {
-    transform: scale(1);
-  }
-  50% {
-    transform: scale(1.35);
-  }
-}
-
 /* Light up matching items in list down view */
 .rm-list li[data-dim] {
-  opacity: 0.2;
+  opacity: 0.25;
   transition: opacity 0.25s ease;
 }
 
 .rm-list li.is-skill-match a::before {
-  transform: scale(1.4);
+  transform: scale(1.3);
   background: var(--lane);
-  box-shadow: 0 0 10px var(--lane);
+  box-shadow: 0 0 8px var(--lane);
 }
 
 .rm-list li.is-skill-match b {
-  color: #FFFFFF;
+  color: var(--ink);
   font-weight: 700;
-  text-shadow: 0 0 8px rgba(255, 255, 255, 0.4);
+  text-decoration: underline;
 }
 
 @media (max-width: 899px) {
@@ -1190,15 +1199,14 @@ const loop = `M${nowX - 27} 47C${nowX - 25} 32 ${nowX + 27} 30 ${nowX + 31} 49C$
 
 @media (prefers-reduced-motion: no-preference) {
   .rm-wipe { stroke-dasharray: 1; animation: rm-wipe 1.1s cubic-bezier(0.3, 0, 0.2, 1) 0.15s backwards; }
-  .rm-station { animation: rm-pop 0.28s ease-out var(--d, 0ms) backwards; transition: transform 0.12s ease-out; }
-  .rm-station.is-active { transform: scale(1.25); }
+  .rm-station { animation: rm-pop 0.28s ease-out var(--d, 0ms) backwards; }
   .rm-label { animation: rm-fade 0.28s ease-out var(--d, 0ms) backwards; }
   .rm-connectors { animation: rm-fade 0.35s ease-out 1.4s backwards; }
   .rm-now { animation: rm-fade 0.35s ease-out 1.3s backwards; }
   .rm-loop { stroke-dasharray: 1; animation: rm-wipe 0.5s ease-out 1.45s backwards; }
   .rm-marker.is-moving { transition: transform 0.26s cubic-bezier(0.2, 0.8, 0.2, 1); }
   @keyframes rm-wipe { from { stroke-dashoffset: 1; } }
-  @keyframes rm-pop { from { opacity: 0; transform: scale(0.6); } }
+  @keyframes rm-pop { from { opacity: 0; } }
   @keyframes rm-fade { from { opacity: 0; } }
 }
 </style>
@@ -1228,11 +1236,15 @@ function initRouteMap() {
       active?.classList.remove('is-active');
       active = s;
       s.classList.add('is-active');
-      marker.style.setProperty('--mx', s.dataset.x!);
-      marker.style.setProperty('--my', s.dataset.y!);
-      const first = !marker.classList.contains('is-on');
-      marker.classList.add('is-on');
-      if (first) requestAnimationFrame(() => marker.classList.add('is-moving'));
+      if (s.dataset.shape === 'pill') {
+        marker.classList.remove('is-on', 'is-moving');
+      } else {
+        marker.style.setProperty('--mx', s.dataset.x!);
+        marker.style.setProperty('--my', s.dataset.y!);
+        const first = !marker.classList.contains('is-on');
+        marker.classList.add('is-on');
+        if (first) requestAnimationFrame(() => marker.classList.add('is-moving'));
+      }
       caption.textContent = s.dataset.caption!;
     };
 
@@ -1300,44 +1312,60 @@ function initRouteMap() {
       });
     }
 
-    // Skill filter
-    let skill = '';
+    // Skill filter (Multi-select)
+    const selectedSkills = new Set<string>();
+
     chips.addEventListener('click', (e) => {
       const b = (e.target as Element).closest<HTMLButtonElement>('button[data-skill]');
       if (!b) return;
-      skill = skill === b.dataset.skill ? '' : b.dataset.skill!;
-      for (const x of chips.querySelectorAll('button[data-skill]')) {
-        x.setAttribute('aria-pressed', String(!!skill && x === b));
+      const sk = b.dataset.skill!;
+      if (selectedSkills.has(sk)) {
+        selectedSkills.delete(sk);
+      } else {
+        selectedSkills.add(sk);
       }
-      const has = (el: HTMLElement | SVGElement) => !skill || (el.dataset.skills ?? '').split(' ').includes(skill);
+
+      for (const x of chips.querySelectorAll<HTMLButtonElement>('button[data-skill]')) {
+        const isSelected = selectedSkills.has(x.dataset.skill!);
+        x.setAttribute('aria-pressed', String(isSelected));
+      }
+
+      const isFiltering = selectedSkills.size > 0;
+      const has = (el: HTMLElement | SVGElement) => {
+        if (!isFiltering) return true;
+        const entrySkills = (el.dataset.skills ?? '').split(' ').filter(Boolean);
+        return entrySkills.some((s) => selectedSkills.has(s));
+      };
 
       // Route Map Stations & Labels: light up matching stations, dim non-matching
       for (const s of stations) {
         const match = has(s);
-        s.toggleAttribute('data-dim', Boolean(skill && !match));
-        s.classList.toggle('is-skill-match', Boolean(skill && match));
+        s.toggleAttribute('data-dim', isFiltering && !match);
+        s.classList.toggle('is-skill-match', isFiltering && match);
       }
       for (const m of root.querySelectorAll<SVGElement>('.rm-label')) {
         const match = has(m);
-        m.toggleAttribute('data-dim', Boolean(skill && !match));
-        m.classList.toggle('is-skill-match', Boolean(skill && match));
+        m.toggleAttribute('data-dim', isFiltering && !match);
+        m.classList.toggle('is-skill-match', isFiltering && match);
       }
-      root.querySelector('.rm-connectors')?.classList.toggle('has-skill-active', Boolean(skill));
+      root.querySelector('.rm-connectors')?.classList.toggle('has-skill-active', isFiltering);
 
       // List View Items: light up matching items, dim non-matching
       let shown = 0;
       for (const li of rows) {
         const match = has(li);
-        li.toggleAttribute('data-dim', Boolean(skill && !match));
-        li.classList.toggle('is-skill-match', Boolean(skill && match));
+        li.toggleAttribute('data-dim', isFiltering && !match);
+        li.classList.toggle('is-skill-match', isFiltering && match);
         if (match) shown++;
       }
       for (const list of root.querySelectorAll<HTMLElement>('.rm-list')) {
         const hasVisible = list.querySelector('li:not([data-dim])');
-        list.classList.toggle('has-no-matches', Boolean(skill && !hasVisible));
+        list.classList.toggle('has-no-matches', isFiltering && !hasVisible);
       }
 
-      status.textContent = skill ? `Showing ${shown} entries that use ${b.textContent?.trim()}.` : 'Showing all entries.';
+      status.textContent = isFiltering
+        ? `Showing ${shown} entries matching ${selectedSkills.size} selected skill${selectedSkills.size > 1 ? 's' : ''}.`
+        : 'Showing all entries.';
     });
   }
 }

@@ -79,6 +79,18 @@ const CHRONO_ORDER: Record<string, number> = {
   'projects/egovph-hackathon-2026': 250,
 };
 
+// Waypoint labels for the map canvas (concise transit names)
+const WAYPOINT_LABELS: Record<string, string> = {
+  'projects/bubble-pos': 'Bubble POS',
+  'projects/mafi-custom-3d': 'MAFI 3D Clothing',
+  'projects/tlcph': 'Tax Leaders Circle',
+  'projects/cnd-upraze': 'CND Upraze',
+  'projects/bizmaker-erp': 'BizMaker ERP',
+  'projects/omma-platform': 'STI OMMA',
+  'projects/gamma-pm': 'Gamma PM',
+  'projects/egovph-hackathon-2026': 'eGovPH Hackathon',
+};
+
 const formatYear = (d: Date | number) =>
   String(new Date(d).getUTCFullYear());
 const n1 = (v: number) => +v.toFixed(1);
@@ -115,7 +127,7 @@ export function buildRouteMap(entries: MapEntry[], now: Date): Layout {
       skills: e.skills,
       when: formatYear(e.date),
       caption: `${LANE_TITLE[e.line]}: ${e.title}, ${formatYear(e.date)}`,
-      label: e.featured ? (e.title.length > 24 ? e.title.slice(0, 23) + '…' : e.title) : '',
+      label: e.featured ? (WAYPOINT_LABELS[e.key] ?? (e.title.length > 20 ? e.title.slice(0, 19) + '…' : e.title)) : '',
       t: e.date.getTime(),
     });
   }

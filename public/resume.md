@@ -33,7 +33,7 @@ Full-Stack Software Engineer and **Magna Cum Laude** Information Systems graduat
 *February 2026 – June 2026 | Metro Manila, Philippines*
 - Co-developed the official educational web portal for **Tax Leaders Circle PH (TLCPH.online)** alongside a fellow developer intern, servicing accredited accounting seminars nationwide.
 - Engineered an automated certificate generator using FPDI/FPDF and a digital tax publication reader using PDF.js and Turn.js with realistic flip-book navigation.
-- Initiated the core development of **BizMaker HRIS ERP**, transitioning payroll workflows into a scalable cloud SaaS application with automated tax calculations and timesheet synchronization.
+- Solo developed **BizMaker HRIS ERP** from the ground up, transitioning payroll workflows into a scalable cloud SaaS application with automated tax calculations and timesheet synchronization.
 
 ### Freelance Full-Stack Developer | Independent Contractor
 *January 2024 – Present | Las Piñas City, Philippines*

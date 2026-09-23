@@ -115,8 +115,18 @@ const year = new Date(project.data.date).getUTCFullYear();
         const total = cards.length;
         const updateStatus = () => {
           const cardWidth = getCardWidth();
-          const activeIndex = Math.min(total, Math.max(1, Math.round(track.scrollLeft / cardWidth) + 1));
+          const maxScroll = track.scrollWidth - track.clientWidth;
+          const isAtEnd = maxScroll > 0 && track.scrollLeft >= maxScroll - 15;
+          const isAtStart = track.scrollLeft <= 15;
+
+          const activeIndex = isAtEnd
+            ? total
+            : Math.min(total, Math.max(1, Math.round(track.scrollLeft / cardWidth) + 1));
+
           countEl.textContent = `Photo ${activeIndex} of ${total} • Swipe or click arrows`;
+
+          (prevBtn as HTMLButtonElement).disabled = isAtStart;
+          (nextBtn as HTMLButtonElement).disabled = isAtEnd;
         };
         track.addEventListener('scroll', updateStatus, { passive: true });
         updateStatus();
@@ -384,11 +394,18 @@ h1 {
   transition: all 0.2s ease;
 }
 
-.project-content :global(.arrow-btn:hover) {
+.project-content :global(.arrow-btn:hover:not(:disabled)) {
   background: rgba(0, 229, 255, 0.15);
   border-color: var(--notes);
   color: var(--notes);
   box-shadow: 0 0 12px rgba(0, 229, 255, 0.3);
+}
+
+.project-content :global(.arrow-btn:disabled) {
+  opacity: 0.35;
+  cursor: not-allowed;
+  pointer-events: none;
+  box-shadow: none;
 }
 
 .project-content :global(.carousel-track) {

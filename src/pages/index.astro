@@ -38,12 +38,6 @@ import RouteMap from '../components/RouteMap.astro';
             </div>
           </div>
 
-          <!-- LinkedIn-style entry placed directly below the name -->
-          <div class="linkedin-headline">
-            <span class="role-badge">SOFTWARE DEVELOPMENT ASSOCIATE</span>
-            <span class="company-tag">AAA and Co., CPAs</span>
-          </div>
-
           <p class="hero-intro">
             Full-stack engineer building production SaaS platforms, internal ERPs, and secure web systems.
           </p>
@@ -81,7 +75,7 @@ import RouteMap from '../components/RouteMap.astro';
       </div>
     </header>
 
-    <!-- Highlights Row: Milestones (Left) & Education (Right) -->
+    <!-- Highlights Row: Milestones (Left) & Education + Experience (Right) -->
     <div class="highlights-row">
       <!-- Milestones Container (Left) -->
       <section class="highlights-col milestones-col" aria-label="Milestones">
@@ -90,28 +84,28 @@ import RouteMap from '../components/RouteMap.astro';
         </div>
 
         <div class="milestones-grid">
-          <!-- Milestone 1: eGovPH Hackathon 2026 -->
-          <article class="milestone-card egov-card">
-            <div class="card-glow-edge gold-glow"></div>
+          <!-- Milestone 1: Magna Cum Laude Note -->
+          <article class="milestone-card honor-card">
+            <div class="card-glow-edge amber-glow"></div>
             <div class="card-inner">
               <div class="milestone-meta-row">
-                <span class="milestone-pill gold-pill">National Finalist • 2026</span>
-                <span class="milestone-role">Lead Developer</span>
+                <span class="milestone-pill amber-pill">Academic Honor • 2026</span>
+                <span class="milestone-role">DFCAMCLP</span>
               </div>
-              <h3 class="milestone-heading">eGovPH National Hackathon 2026</h3>
+              <h3 class="milestone-heading">Magna Cum Laude • BSIS</h3>
               <div class="milestone-location">
                 <svg width="13" height="13" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round" aria-hidden="true">
-                  <path d="M21 10c0 7-9 13-9 13s-9-6-9-13a9 9 0 0 1 18 0z"></path>
-                  <circle cx="12" cy="10" r="3"></circle>
+                  <path d="M22 10v6M2 10l10-5 10 5-10 5z"></path>
+                  <path d="M6 12v5c3 3 9 3 12 0v-5"></path>
                 </svg>
-                <span>5-Member Team "Println New Gen" • SMX Aura, BGC</span>
+                <span>Dr. Filemon C. Aguilar College</span>
               </div>
               <p class="milestone-desc">
-                Engineered a functional public service prototype under 48-hour pressure, integrating national government APIs (<strong>eGov SSO</strong>, <strong>eVerify</strong>, <strong>eGovPay</strong>).
+                Graduated with highest academic distinction while architecting enterprise systems and competing in national hackathons.
               </p>
               <div class="milestone-actions">
-                <a href="/projects/egovph-hackathon-2026" class="milestone-btn primary-milestone-btn">
-                  <span>Explore Project &amp; Photos</span>
+                <a href="/notes/graduating-magna-cum-laude" class="milestone-btn amber-milestone-btn">
+                  <span>Read Note</span>
                   <svg width="14" height="14" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round" aria-hidden="true">
                     <line x1="5" y1="12" x2="19" y2="12"></line>
                     <polyline points="12 5 19 12 12 19"></polyline>
@@ -121,7 +115,38 @@ import RouteMap from '../components/RouteMap.astro';
             </div>
           </article>
 
-          <!-- Milestone 2: Cisco Junior Cybersecurity Analyst -->
+          <!-- Milestone 2: eGovPH Hackathon 2026 -->
+          <article class="milestone-card egov-card">
+            <div class="card-glow-edge gold-glow"></div>
+            <div class="card-inner">
+              <div class="milestone-meta-row">
+                <span class="milestone-pill gold-pill">National Participant • 2026</span>
+                <span class="milestone-role">Lead Developer</span>
+              </div>
+              <h3 class="milestone-heading">eGovPH Hackathon 2026</h3>
+              <div class="milestone-location">
+                <svg width="13" height="13" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round" aria-hidden="true">
+                  <path d="M21 10c0 7-9 13-9 13s-9-6-9-13a9 9 0 0 1 18 0z"></path>
+                  <circle cx="12" cy="10" r="3"></circle>
+                </svg>
+                <span>Team Println New Gen • SMX Aura</span>
+              </div>
+              <p class="milestone-desc">
+                Engineered a functional public service prototype under 48-hour pressure, integrating national government APIs.
+              </p>
+              <div class="milestone-actions">
+                <a href="/projects/egovph-hackathon-2026" class="milestone-btn primary-milestone-btn">
+                  <span>Explore Project</span>
+                  <svg width="14" height="14" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round" aria-hidden="true">
+                    <line x1="5" y1="12" x2="19" y2="12"></line>
+                    <polyline points="12 5 19 12 12 19"></polyline>
+                  </svg>
+                </a>
+              </div>
+            </div>
+          </article>
+
+          <!-- Milestone 3: Cisco Junior Cybersecurity Analyst -->
           <article class="milestone-card cyber-card">
             <div class="card-glow-edge cyan-glow"></div>
             <div class="card-inner">
@@ -137,7 +162,7 @@ import RouteMap from '../components/RouteMap.astro';
                 <span>Cisco Networking Academy • Verified</span>
               </div>
               <p class="milestone-desc">
-                In-depth mastery across Network Defense, Endpoint Security, and SOC operations. Dissected live packet captures in Wireshark and hardened application endpoints.
+                In-depth mastery across Network Defense, Endpoint Security, and SOC operations. Dissected live packet captures in Wireshark.
               </p>
               <div class="milestone-actions">
                 <a href="/notes/junior-cybersecurity-analyst-journey" class="milestone-btn cyber-milestone-btn">
@@ -156,32 +181,69 @@ import RouteMap from '../components/RouteMap.astro';
         </div>
       </section>
 
-      <!-- Education Container (Right) -->
-      <section class="highlights-col education-col" aria-label="Education">
-        <div class="col-header">
-          <h2 class="col-title">Education</h2>
-        </div>
+      <!-- Right Column: Education on top, Experience on bottom -->
+      <div class="right-stack-col">
+        <!-- Education Container -->
+        <section class="highlights-col education-col" aria-label="Education">
+          <div class="col-header">
+            <h2 class="col-title">Education</h2>
+          </div>
 
-        <div class="education-card">
-          <div class="edu-item">
-            <div class="edu-header">
-              <span class="honor-pill">Magna Cum Laude</span>
-              <span class="edu-degree">B.S. in Information Systems</span>
-              <span class="edu-years">2022 – 2026</span>
+          <div class="education-card">
+            <div class="edu-item">
+              <div class="edu-row">
+                <h3 class="edu-heading">B.S. in Information Systems</h3>
+                <span class="edu-years">2022 – 2026</span>
+              </div>
+              <p class="edu-school">Dr. Filemon C. Aguilar Memorial College of Las Piñas (DFCAMCLP)</p>
             </div>
-            <p class="edu-school">Dr. Filemon C. Aguilar Memorial College of Las Piñas (DFCAMCLP)</p>
-          </div>
-          <div class="edu-divider"></div>
-          <div class="edu-item hs-item">
-            <div class="edu-header">
-              <span class="hs-track">TVL-ICT Track</span>
-              <span class="edu-school-name">De La Salle Santiago Zobel School – BRafeNHS</span>
-              <span class="edu-years">2016 – 2022</span>
+            <div class="edu-divider"></div>
+            <div class="edu-item hs-item">
+              <div class="edu-row">
+                <h3 class="edu-heading">De La Salle Santiago Zobel School – BRafeNHS</h3>
+                <span class="edu-years">2016 – 2022</span>
+              </div>
+              <p class="hs-note">Junior High School (2016–2020) • Senior High School TVL-ICT (2020–2022)</p>
             </div>
-            <p class="hs-note">Junior High School (2016–2020) • Senior High School TVL-ICT (2020–2022)</p>
           </div>
-        </div>
-      </section>
+        </section>
+
+        <!-- Experience Container -->
+        <section class="highlights-col experience-col" aria-label="Experience">
+          <div class="col-header">
+            <h2 class="col-title">Experience</h2>
+          </div>
+
+          <div class="experience-card">
+            <div class="exp-item">
+              <div class="exp-row">
+                <h3 class="exp-heading">Software Development Associate</h3>
+                <span class="exp-years">June 2026 – Present</span>
+              </div>
+              <p class="exp-company">AAA and Co., CPAs • Full-Time</p>
+              <p class="exp-desc">Architecting Gamma Oracle PM &amp; internal cost control platform.</p>
+            </div>
+            <div class="exp-divider"></div>
+            <div class="exp-item">
+              <div class="exp-row">
+                <h3 class="exp-heading">Software Engineering Intern</h3>
+                <span class="exp-years">Feb 2026 – June 2026</span>
+              </div>
+              <p class="exp-company">Gamma Oracle Dimension Inc.</p>
+              <p class="exp-desc">Solo developed BizMaker HRIS ERP; co-developed Tax Leaders Circle PH (TLCPH.online).</p>
+            </div>
+            <div class="exp-divider"></div>
+            <div class="exp-item">
+              <div class="exp-row">
+                <h3 class="exp-heading">Freelance Full-Stack Developer</h3>
+                <span class="exp-years">2024 – Present</span>
+              </div>
+              <p class="exp-company">Self-Employed • Independent Contractor</p>
+              <p class="exp-desc">Shipped custom ERP, POS, and inventory platforms for local businesses.</p>
+            </div>
+          </div>
+        </section>
+      </div>
     </div>
 
     <!-- Route Map & Kanban Skills Matrix -->
@@ -424,7 +486,7 @@ import RouteMap from '../components/RouteMap.astro';
    ===================================================================== */
 .highlights-row {
   display: grid;
-  grid-template-columns: 1.45fr 1fr;
+  grid-template-columns: 1.15fr 1fr;
   gap: 1.25rem;
   margin-bottom: 2.75rem;
   align-items: stretch;
@@ -459,18 +521,12 @@ import RouteMap from '../components/RouteMap.astro';
   letter-spacing: -0.01em;
 }
 
-/* Milestones Grid (Left Column) */
+/* Milestones Vertical Stack (Left Column) */
 .milestones-grid {
-  display: grid;
-  grid-template-columns: 1fr 1fr;
-  gap: 0.85rem;
+  display: flex;
+  flex-direction: column;
+  gap: 0.75rem;
   flex: 1;
-}
-
-@media (max-width: 620px) {
-  .milestones-grid {
-    grid-template-columns: 1fr;
-  }
 }
 
 .milestone-card {
@@ -488,9 +544,14 @@ import RouteMap from '../components/RouteMap.astro';
   transform: translateY(-2px);
 }
 
-.egov-card:hover {
+.honor-card:hover {
   border-color: #B45309;
   box-shadow: 0 4px 14px rgba(180, 83, 9, 0.12);
+}
+
+.egov-card:hover {
+  border-color: #D9531E;
+  box-shadow: 0 4px 14px rgba(217, 83, 30, 0.12);
 }
 
 .cyber-card:hover {
@@ -503,8 +564,12 @@ import RouteMap from '../components/RouteMap.astro';
   width: 100%;
 }
 
+.amber-glow {
+  background: linear-gradient(90deg, #D97706, #B45309);
+}
+
 .gold-glow {
-  background: linear-gradient(90deg, #B45309, #D9531E);
+  background: linear-gradient(90deg, #D9531E, #B45309);
 }
 
 .cyan-glow {
@@ -512,7 +577,7 @@ import RouteMap from '../components/RouteMap.astro';
 }
 
 .card-inner {
-  padding: 0.95rem;
+  padding: 0.85rem;
   display: flex;
   flex-direction: column;
   flex: 1;
@@ -522,24 +587,30 @@ import RouteMap from '../components/RouteMap.astro';
   display: flex;
   align-items: center;
   justify-content: space-between;
-  gap: 0.4rem;
+  gap: 0.35rem;
   margin-bottom: 0.45rem;
   flex-wrap: wrap;
 }
 
 .milestone-pill {
-  font-size: 0.68rem;
+  font-size: 0.65rem;
   font-weight: 800;
   text-transform: uppercase;
   letter-spacing: 0.04em;
-  padding: 0.15rem 0.45rem;
+  padding: 0.15rem 0.4rem;
   border-radius: 4px;
 }
 
-.gold-pill {
-  background: rgba(180, 83, 9, 0.1);
+.amber-pill {
+  background: rgba(217, 119, 6, 0.1);
   color: #B45309;
-  border: 1px solid rgba(180, 83, 9, 0.25);
+  border: 1px solid rgba(217, 119, 6, 0.25);
+}
+
+.gold-pill {
+  background: rgba(217, 83, 30, 0.1);
+  color: #D9531E;
+  border: 1px solid rgba(217, 83, 30, 0.25);
 }
 
 .cyan-pill {
@@ -549,14 +620,14 @@ import RouteMap from '../components/RouteMap.astro';
 }
 
 .milestone-role {
-  font-size: 0.75rem;
+  font-size: 0.72rem;
   color: var(--ink-3);
   font-weight: 600;
 }
 
 .milestone-heading {
-  margin: 0 0 0.35rem;
-  font-size: 1.05rem;
+  margin: 0 0 0.3rem;
+  font-size: 0.95rem;
   font-weight: 700;
   color: var(--ink);
   line-height: 1.25;
@@ -565,31 +636,31 @@ import RouteMap from '../components/RouteMap.astro';
 .milestone-location {
   display: flex;
   align-items: center;
-  gap: 0.35rem;
+  gap: 0.3rem;
   color: var(--ink-3);
-  font-size: 0.78rem;
-  margin-bottom: 0.55rem;
+  font-size: 0.75rem;
+  margin-bottom: 0.5rem;
 }
 
 .milestone-location svg {
   color: var(--notes);
   flex-shrink: 0;
-  width: 13px;
-  height: 13px;
+  width: 12px;
+  height: 12px;
 }
 
 .milestone-desc {
   color: var(--ink-2);
-  font-size: 0.825rem;
-  line-height: 1.45;
-  margin: 0 0 0.85rem;
+  font-size: 0.8rem;
+  line-height: 1.4;
+  margin: 0 0 0.75rem;
   flex: 1;
 }
 
 .milestone-actions {
   display: flex;
   align-items: center;
-  gap: 0.55rem;
+  gap: 0.5rem;
   flex-wrap: wrap;
   margin-top: auto;
 }
@@ -598,22 +669,33 @@ import RouteMap from '../components/RouteMap.astro';
   display: inline-flex;
   align-items: center;
   gap: 0.35rem;
-  padding: 0.4rem 0.75rem;
+  padding: 0.35rem 0.65rem;
   border-radius: 6px;
-  font-size: 0.78rem;
+  font-size: 0.75rem;
   font-weight: 700;
   text-decoration: none;
   transition: all 0.2s ease;
 }
 
-.primary-milestone-btn {
+.amber-milestone-btn {
   background: #B45309;
   color: #FFFFFF;
   border: 1px solid #B45309;
 }
 
-.primary-milestone-btn:hover {
+.amber-milestone-btn:hover {
   background: #92400E;
+  color: #FFFFFF;
+}
+
+.primary-milestone-btn {
+  background: #D9531E;
+  color: #FFFFFF;
+  border: 1px solid #D9531E;
+}
+
+.primary-milestone-btn:hover {
+  background: #B43809;
   color: #FFFFFF;
 }
 
@@ -630,7 +712,7 @@ import RouteMap from '../components/RouteMap.astro';
 
 .milestone-secondary-link {
   color: var(--ink-2);
-  font-size: 0.78rem;
+  font-size: 0.75rem;
   font-weight: 600;
   text-decoration: underline;
   text-underline-offset: 2px;
@@ -640,91 +722,88 @@ import RouteMap from '../components/RouteMap.astro';
   color: var(--ink);
 }
 
-/* Education Container (Right Column) */
-.education-col .education-card {
+/* Right Column: Education & Experience Stack */
+.right-stack-col {
+  display: flex;
+  flex-direction: column;
+  gap: 1.25rem;
+}
+
+.education-col .education-card,
+.experience-col .experience-card {
   background: var(--surface-2);
   border: 1px solid var(--rail);
   border-radius: 8px;
-  padding: 1.15rem;
+  padding: 1rem 1.15rem;
   flex: 1;
   display: flex;
   flex-direction: column;
-  justify-content: center;
+  justify-content: space-around;
   margin-bottom: 0;
 }
 
-.edu-item {
+.edu-item,
+.exp-item {
   display: flex;
   flex-direction: column;
 }
 
-.edu-header {
+.edu-row,
+.exp-row {
   display: flex;
-  align-items: center;
-  gap: 0.5rem;
-  flex-wrap: wrap;
+  align-items: baseline;
+  justify-content: space-between;
+  gap: 0.65rem;
+  margin-bottom: 0.2rem;
 }
 
-.honor-pill {
-  background: rgba(180, 83, 9, 0.1);
-  color: #B45309;
-  border: 1px solid rgba(180, 83, 9, 0.25);
-  padding: 0.15rem 0.45rem;
-  border-radius: 4px;
-  font-weight: 800;
-  font-size: 0.7rem;
-  text-transform: uppercase;
-  letter-spacing: 0.03em;
+.edu-years,
+.exp-years {
+  color: var(--ink-3);
+  font-size: 0.78rem;
+  font-weight: 600;
+  white-space: nowrap;
 }
 
-.edu-degree {
+.edu-heading,
+.exp-heading {
+  margin: 0;
+  font-size: 0.95rem;
   font-weight: 700;
   color: var(--ink);
-  font-size: 0.92rem;
+  line-height: 1.3;
 }
 
-.edu-years {
-  margin-left: auto;
-  color: var(--ink-3);
-  font-size: 0.8rem;
+.exp-company {
+  margin: 0 0 0.2rem;
+  color: var(--notes);
+  font-size: 0.825rem;
   font-weight: 600;
 }
 
-.edu-school {
-  margin: 0.35rem 0 0;
+.exp-desc {
+  margin: 0;
   color: var(--ink-2);
-  font-size: 0.85rem;
+  font-size: 0.8rem;
   line-height: 1.4;
 }
 
-.edu-divider {
+.edu-school {
+  margin: 0;
+  color: var(--ink-2);
+  font-size: 0.825rem;
+  line-height: 1.4;
+}
+
+.edu-divider,
+.exp-divider {
   height: 1px;
   background: var(--rail);
-  margin: 0.9rem 0;
-}
-
-.hs-item .edu-header {
-  font-size: 0.88rem;
-}
-
-.hs-track {
-  background: rgba(2, 132, 199, 0.1);
-  color: #0284C7;
-  border: 1px solid rgba(2, 132, 199, 0.25);
-  padding: 0.15rem 0.45rem;
-  border-radius: 4px;
-  font-size: 0.7rem;
-  font-weight: 700;
-}
-
-.edu-school-name {
-  font-weight: 600;
-  color: var(--ink);
-  font-size: 0.88rem;
+  margin: 0.75rem 0;
 }
 
 .hs-note {
-  margin: 0.35rem 0 0;
+  margin: 0;
   color: var(--ink-3);
   font-size: 0.8rem;
   line-height: 1.4;
