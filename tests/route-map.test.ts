@@ -137,3 +137,48 @@ test('Connectors: Produces correct SVG path types for straight, diagonal, and be
     assert.match(conn, /^M\d+(\.\d+)?/);
   }
 });
+
+test('Chronological Ordering with Year-Only Dates: Tax Leader < CND Upraze < BizMaker ERP < OMMA and MAFI 3D < Jarvis AI', () => {
+  const y2024 = new Date('2024-01-01T00:00:00Z');
+  const y2025 = new Date('2025-01-01T00:00:00Z');
+  const y2026 = new Date('2026-01-01T00:00:00Z');
+
+  const entries: MapEntry[] = [
+    { key: 'projects/gamma-pm', line: 'projects', title: 'Gamma PM', date: y2026, href: '/p', skills: [], related: [] },
+    { key: 'projects/omma-platform', line: 'projects', title: 'OMMA', date: y2026, href: '/p', skills: [], related: [] },
+    { key: 'projects/bizmaker-erp', line: 'projects', title: 'BizMaker ERP', date: y2026, href: '/p', skills: [], related: [] },
+    { key: 'projects/cnd-upraze', line: 'projects', title: 'CND Upraze', date: y2026, href: '/p', skills: [], related: [] },
+    { key: 'projects/tlcph', line: 'projects', title: 'Tax Leader', date: y2026, href: '/p', skills: [], related: [] },
+    { key: 'projects/jarvis-ai', line: 'projects', title: 'Jarvis.AI', date: y2025, href: '/p', skills: [], related: [] },
+    { key: 'projects/mafi-custom-3d', line: 'projects', title: 'MAFI 3D', date: y2025, href: '/p', skills: [], related: [] },
+    { key: 'projects/bubble-pos', line: 'projects', title: 'Bubble POS', date: y2024, href: '/p', skills: [], related: [] },
+  ];
+
+  const layout = buildRouteMap(entries, now);
+  const projectStations = layout.stations.filter((s) => s.line === 'projects');
+  const keys = projectStations.map((s) => s.key);
+
+  // Check 2025 order: MAFI 3D before Jarvis.AI
+  const mafiIdx = keys.indexOf('projects/mafi-custom-3d');
+  const jarvisIdx = keys.indexOf('projects/jarvis-ai');
+  assert.ok(mafiIdx !== -1 && jarvisIdx !== -1);
+  assert.ok(mafiIdx < jarvisIdx, `Expected MAFI 3D (${mafiIdx}) to precede Jarvis.AI (${jarvisIdx})`);
+
+  // Check 2026 order: Tax Leader < CND Upraze < BizMaker ERP < OMMA
+  const tlcIdx = keys.indexOf('projects/tlcph');
+  const cndIdx = keys.indexOf('projects/cnd-upraze');
+  const bizIdx = keys.indexOf('projects/bizmaker-erp');
+  const ommaIdx = keys.indexOf('projects/omma-platform');
+  assert.ok(tlcIdx !== -1 && cndIdx !== -1 && bizIdx !== -1 && ommaIdx !== -1);
+  assert.ok(tlcIdx < cndIdx, `Expected Tax Leader (${tlcIdx}) to precede CND Upraze (${cndIdx})`);
+  assert.ok(cndIdx < bizIdx, `Expected CND Upraze (${cndIdx}) to precede BizMaker ERP (${bizIdx})`);
+  assert.ok(bizIdx < ommaIdx, `Expected BizMaker ERP (${bizIdx}) to precede OMMA (${ommaIdx})`);
+
+  // Also verify x coordinates are strictly increasing
+  for (let i = 1; i < projectStations.length; i++) {
+    assert.ok(
+      projectStations[i].x > projectStations[i - 1].x,
+      `Expected station ${projectStations[i].key} x (${projectStations[i].x}) > previous station ${projectStations[i - 1].key} x (${projectStations[i - 1].x})`
+    );
+  }
+});

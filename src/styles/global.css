@@ -1,30 +1,30 @@
 :root {
-  --paper: #080C15;
-  --surface: #0D1322;
-  --surface-2: #141D32;
-  --surface-card: rgba(13, 19, 34, 0.85);
-  --ink: #F1F5F9;
-  --ink-2: #94A3B8;
-  --ink-3: #64748B;
-  --rail: #1E293B;
-  --rail-light: #2D3D58;
-  --border-glow: rgba(0, 229, 255, 0.25);
+  --paper: #FFFFFF;
+  --surface: #FFFFFF;
+  --surface-2: #F8FAFC;
+  --surface-card: #FFFFFF;
+  --ink: #0F2233;
+  --ink-2: #52667A;
+  --ink-3: #7C8B9B;
+  --rail: #E2E8F0;
+  --rail-light: #CBD5E1;
+  --border-glow: rgba(0, 102, 204, 0.15);
 
-  /* Neon Gamer Palette */
-  --projects: #FF6B00;
-  --projects-text: #FF8533;
-  --projects-glow: rgba(255, 107, 0, 0.4);
+  /* Clean Transit Palette */
+  --projects: #D9531E;
+  --projects-text: #B43809;
+  --projects-glow: rgba(217, 83, 30, 0.25);
 
-  --learning: #00FF9D;
-  --learning-text: #33FFAE;
-  --learning-glow: rgba(0, 255, 157, 0.4);
+  --learning: #059669;
+  --learning-text: #047857;
+  --learning-glow: rgba(5, 150, 105, 0.25);
 
-  --notes: #00E5FF;
-  --notes-text: #33ECFF;
-  --notes-glow: rgba(0, 229, 255, 0.4);
+  --notes: #0284C7;
+  --notes-text: #0369A1;
+  --notes-glow: rgba(2, 132, 199, 0.25);
 
-  --accent-purple: #A855F7;
-  --accent-gold: #FFD700;
+  --accent-purple: #7C3AED;
+  --accent-gold: #B45309;
 
   --font: 'Atkinson Hyperlegible Next Variable', system-ui, -apple-system, sans-serif;
   --font-mono: ui-monospace, SFMono-Regular, Menlo, Monaco, Consolas, monospace;
@@ -53,14 +53,7 @@
 body {
   margin: 0;
   padding: 2rem 1.25rem 4rem;
-  background-color: var(--paper);
-  background-image: 
-    radial-gradient(circle at 50% 0%, rgba(0, 229, 255, 0.08) 0%, transparent 50%),
-    radial-gradient(circle at 90% 20%, rgba(168, 85, 247, 0.05) 0%, transparent 40%),
-    linear-gradient(rgba(255, 255, 255, 0.02) 1px, transparent 1px),
-    linear-gradient(90deg, rgba(255, 255, 255, 0.02) 1px, transparent 1px);
-  background-size: 100% 100%, 100% 100%, 36px 36px, 36px 36px;
-  background-attachment: fixed;
+  background-color: #FFFFFF;
   color: var(--ink);
   font-family: var(--font);
   font-size: 1.0625rem;
@@ -86,21 +79,21 @@ a {
 }
 
 a:hover {
-  color: #67e8f9;
+  color: var(--notes-text);
 }
 
-/* Custom Cyber Scrollbar */
+/* Custom Scrollbar */
 ::-webkit-scrollbar {
   width: 8px;
   height: 8px;
 }
 ::-webkit-scrollbar-track {
-  background: var(--paper);
+  background: #F1F5F9;
 }
 ::-webkit-scrollbar-thumb {
   background: var(--rail-light);
   border-radius: 4px;
 }
 ::-webkit-scrollbar-thumb:hover {
-  background: var(--notes);
+  background: var(--ink-3);
 }

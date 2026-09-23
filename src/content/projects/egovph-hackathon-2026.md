@@ -1,6 +1,6 @@
 ---
 title: "eGovPH National Hackathon 2026"
-date: "2026-07"
+date: "2026"
 featured: true
 client: "DICT - eGovPH Hackathon (SMX Aura, BGC)"
 role: "Team 'Println New Gen' Lead / Developer"
@@ -42,48 +42,12 @@ Even though we didn't take home the championship, the two days were pure energy.
       </button>
     </div>
   </div>
-
   <div class="carousel-track" id="gallery-track" tabindex="0" role="region" aria-label="eGovPH Hackathon 2026 Photo Gallery">
-    <figure class="carousel-card">
-      <div class="img-frame">
-        <img src="/images/hackathons/egovph-2026/team-backdrop.jpg" alt="Team Println New Gen at eGovPH Hackathon 2026 stage" loading="lazy" />
-      </div>
-      <figcaption>Team Println New Gen at the official eGovPH stage</figcaption>
-    </figure>
-
-    <figure class="carousel-card">
-      <div class="img-frame">
-        <img src="/images/hackathons/egovph-2026/with-bryl-lim.jpg" alt="Team with AI engineer Bryl Lim" loading="lazy" />
-      </div>
-      <figcaption>With tech idol Bryl Lim</figcaption>
-    </figure>
-
-    <figure class="carousel-card">
-      <div class="img-frame">
-        <img src="/images/hackathons/egovph-2026/with-boss-rod.png" alt="With Code with Boss Rod" loading="lazy" />
-      </div>
-      <figcaption>With Boss Rod (Code with Boss Rod)</figcaption>
-    </figure>
-
-    <figure class="carousel-card">
-      <div class="img-frame">
-        <img src="/images/hackathons/egovph-2026/badges.jpg" alt="Hackathon Participant Badges - Vince, Julius, Adrian" loading="lazy" />
-      </div>
-      <figcaption>Our official DICT eGovPH delegate badges</figcaption>
-    </figure>
-
-    <figure class="carousel-card">
-      <div class="img-frame">
-        <img src="/images/hackathons/egovph-2026/hall-session.jpg" alt="Auditorium hall at SMX Aura BGC" loading="lazy" />
-      </div>
-      <figcaption>In the SMX Aura main auditorium</figcaption>
-    </figure>
-
-    <figure class="carousel-card">
-      <div class="img-frame">
-        <img src="/images/hackathons/egovph-2026/smart-cards.jpg" alt="Futuristic collectible NFC badges" loading="lazy" />
-      </div>
-      <figcaption>Commemorative NFC badges from the event</figcaption>
-    </figure>
+    <figure class="carousel-card"><div class="img-frame"><img src="/images/hackathons/egovph-2026/team-backdrop.jpg" alt="Team Println New Gen at eGovPH Hackathon 2026 stage" loading="lazy" /></div><figcaption>Team Println New Gen at the official eGovPH stage</figcaption></figure>
+    <figure class="carousel-card"><div class="img-frame"><img src="/images/hackathons/egovph-2026/with-bryl-lim.jpg" alt="Team with AI engineer Bryl Lim" loading="lazy" /></div><figcaption>With tech idol Bryl Lim</figcaption></figure>
+    <figure class="carousel-card"><div class="img-frame"><img src="/images/hackathons/egovph-2026/with-boss-rod.png" alt="With Code with Boss Rod" loading="lazy" /></div><figcaption>With Boss Rod (Code with Boss Rod)</figcaption></figure>
+    <figure class="carousel-card"><div class="img-frame"><img src="/images/hackathons/egovph-2026/badges.jpg" alt="Hackathon Participant Badges - Vince, Julius, Adrian" loading="lazy" /></div><figcaption>Our official DICT eGovPH delegate badges</figcaption></figure>
+    <figure class="carousel-card"><div class="img-frame"><img src="/images/hackathons/egovph-2026/hall-session.jpg" alt="Auditorium hall at SMX Aura BGC" loading="lazy" /></div><figcaption>In the SMX Aura main auditorium</figcaption></figure>
+    <figure class="carousel-card"><div class="img-frame"><img src="/images/hackathons/egovph-2026/smart-cards.jpg" alt="Futuristic collectible NFC badges" loading="lazy" /></div><figcaption>Commemorative NFC badges from the event</figcaption></figure>
   </div>
 </div>

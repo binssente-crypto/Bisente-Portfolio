@@ -61,6 +61,24 @@ const LANES: Line[] = ['projects', 'learning', 'notes'];
 const LANE_Y: Record<Line, number> = { projects: 120, learning: 216, notes: 312 };
 const LANE_TITLE: Record<Line, string> = { projects: 'Projects', learning: 'Learning', notes: 'Notes' };
 
+// Explicit chronological arrangement when entries share the same year
+const CHRONO_ORDER: Record<string, number> = {
+  // 2024
+  'projects/bubble-pos': 10,
+  'projects/galaxent-attendance': 20,
+  'projects/mafi-receipt': 30,
+  // 2025: MAFI 3D Custom Clothing came before Jarvis.AI
+  'projects/mafi-custom-3d': 100,
+  'projects/jarvis-ai': 110,
+  // 2026: Tax Leader -> CND Upraze -> BizMaker ERP -> OMMA -> Gamma PM -> eGovPH
+  'projects/tlcph': 200,
+  'projects/cnd-upraze': 210,
+  'projects/bizmaker-erp': 220,
+  'projects/omma-platform': 230,
+  'projects/gamma-pm': 240,
+  'projects/egovph-hackathon-2026': 250,
+};
+
 const formatYear = (d: Date | number) =>
   String(new Date(d).getUTCFullYear());
 const n1 = (v: number) => +v.toFixed(1);
@@ -134,7 +152,15 @@ export function buildRouteMap(entries: MapEntry[], now: Date): Layout {
   for (const line of LANES) {
     const lane = items.filter((i) => i.line === line);
     for (const i of lane) i.x = Math.min(Math.max(xOf(i.t), LEFT + i.hw), RIGHT - i.hw);
-    lane.sort((a, b) => a.x - b.x || a.key.localeCompare(b.key));
+    const orderOf = (key: string) => CHRONO_ORDER[key] ?? 999;
+    lane.sort((a, b) => {
+      const dx = a.x - b.x;
+      if (Math.abs(dx) > 0.01) return dx;
+      const ordA = orderOf(a.key);
+      const ordB = orderOf(b.key);
+      if (ordA !== ordB) return ordA - ordB;
+      return a.key.localeCompare(b.key);
+    });
     for (let i = 1; i < lane.length; i++) {
       const min = lane[i - 1].x + lane[i - 1].hw + GAP + lane[i].hw;
       if (lane[i].x < min) lane[i].x = min;
@@ -146,34 +172,14 @@ export function buildRouteMap(entries: MapEntry[], now: Date): Layout {
     if (lane.length && lane[0].x - lane[0].hw < LEFT - 0.01)
       throw new Error(`Too many entries on the ${line} line to fit (about 30 fit). Merge or remove some.`);
 
-    const reach = { above: -Infinity, below: -Infinity };
     for (const i of lane) {
-      const lw = i.label.length * 7;
-      const anchor = i.x - lw / 2 < LEFT ? 'start' : i.x + lw / 2 > W - 8 ? 'end' : 'middle';
-      const left = anchor === 'start' ? i.x - i.hw : anchor === 'end' ? i.x + i.hw - lw : i.x - lw / 2;
-      let below = false;
-      let label = i.label;
-      if (i.label && i.shape !== 'pill') {
-        const canAbove = left >= reach.above + 8;
-        const canBelow = left >= reach.below + 8;
-        if (canAbove) {
-          below = false;
-          reach.above = left + lw;
-        } else if (canBelow) {
-          below = true;
-          reach.below = left + lw;
-        } else {
-          // Suppress static SVG text if both above and below collide with nearby labels
-          label = '';
-        }
-      }
       stations.push({
         ...i,
-        label,
+        label: i.label,
         x: n1(i.x),
         y: LANE_Y[line],
-        labelAnchor: anchor,
-        labelBelow: below,
+        labelAnchor: 'start',
+        labelBelow: false,
         delay: Math.round(150 + (1100 * (i.x - LEFT)) / (NOW_X - LEFT)),
       });
     }
