@@ -27,29 +27,63 @@ Even though we didn't take home the championship, the two days were pure energy.
 
 ### Photo Gallery
 
-<div class="gallery-grid" style="display: grid; grid-template-columns: repeat(auto-fit, minmax(280px, 1fr)); gap: 1rem; margin-top: 1.5rem;">
-  <figure style="margin: 0; background: var(--color-surface, #1e1e2e); padding: 0.5rem; border-radius: 8px;">
-    <img src="/images/hackathons/egovph-2026/team-backdrop.jpg" alt="Team Println New Gen at eGovPH Hackathon 2026 stage" style="width: 100%; border-radius: 6px; display: block;" />
-    <figcaption style="font-size: 0.85rem; color: var(--color-muted, #a6adc8); margin-top: 0.5rem; text-align: center;">Team Println New Gen at the official eGovPH stage</figcaption>
-  </figure>
-  <figure style="margin: 0; background: var(--color-surface, #1e1e2e); padding: 0.5rem; border-radius: 8px;">
-    <img src="/images/hackathons/egovph-2026/with-bryl-lim.jpg" alt="Team with AI engineer Bryl Lim" style="width: 100%; border-radius: 6px; display: block;" />
-    <figcaption style="font-size: 0.85rem; color: var(--color-muted, #a6adc8); margin-top: 0.5rem; text-align: center;">With tech idol Bryl Lim</figcaption>
-  </figure>
-  <figure style="margin: 0; background: var(--color-surface, #1e1e2e); padding: 0.5rem; border-radius: 8px;">
-    <img src="/images/hackathons/egovph-2026/with-boss-rod.png" alt="With Code with Boss Rod" style="width: 100%; border-radius: 6px; display: block;" />
-    <figcaption style="font-size: 0.85rem; color: var(--color-muted, #a6adc8); margin-top: 0.5rem; text-align: center;">With Boss Rod (Code with Boss Rod)</figcaption>
-  </figure>
-  <figure style="margin: 0; background: var(--color-surface, #1e1e2e); padding: 0.5rem; border-radius: 8px;">
-    <img src="/images/hackathons/egovph-2026/badges.jpg" alt="Hackathon Participant Badges - Vince, Julius, Adrian" style="width: 100%; border-radius: 6px; display: block;" />
-    <figcaption style="font-size: 0.85rem; color: var(--color-muted, #a6adc8); margin-top: 0.5rem; text-align: center;">Our official DICT eGovPH delegate badges</figcaption>
-  </figure>
-  <figure style="margin: 0; background: var(--color-surface, #1e1e2e); padding: 0.5rem; border-radius: 8px;">
-    <img src="/images/hackathons/egovph-2026/hall-session.jpg" alt="Auditorium hall at SMX Aura BGC" style="width: 100%; border-radius: 6px; display: block;" />
-    <figcaption style="font-size: 0.85rem; color: var(--color-muted, #a6adc8); margin-top: 0.5rem; text-align: center;">In the SMX Aura main auditorium</figcaption>
-  </figure>
-  <figure style="margin: 0; background: var(--color-surface, #1e1e2e); padding: 0.5rem; border-radius: 8px;">
-    <img src="/images/hackathons/egovph-2026/smart-cards.jpg" alt="Futuristic collectible NFC badges" style="width: 100%; border-radius: 6px; display: block;" />
-    <figcaption style="font-size: 0.85rem; color: var(--color-muted, #a6adc8); margin-top: 0.5rem; text-align: center;">Commemorative NFC badges from the event</figcaption>
-  </figure>
+<div class="carousel-wrapper" id="egov-gallery">
+  <div class="carousel-header-bar">
+    <div class="carousel-status">
+      <span class="status-indicator"></span>
+      <span class="carousel-counter" id="carousel-count">6 Photos • Swipe or click arrows</span>
+    </div>
+    <div class="carousel-arrows">
+      <button type="button" class="arrow-btn" id="prev-slide" aria-label="Previous photo">
+        <svg width="18" height="18" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2.5" stroke-linecap="round" stroke-linejoin="round"><polyline points="15 18 9 12 15 6"></polyline></svg>
+      </button>
+      <button type="button" class="arrow-btn" id="next-slide" aria-label="Next photo">
+        <svg width="18" height="18" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2.5" stroke-linecap="round" stroke-linejoin="round"><polyline points="9 18 15 12 9 6"></polyline></svg>
+      </button>
+    </div>
+  </div>
+
+  <div class="carousel-track" id="gallery-track" tabindex="0" role="region" aria-label="eGovPH Hackathon 2026 Photo Gallery">
+    <figure class="carousel-card">
+      <div class="img-frame">
+        <img src="/images/hackathons/egovph-2026/team-backdrop.jpg" alt="Team Println New Gen at eGovPH Hackathon 2026 stage" loading="lazy" />
+      </div>
+      <figcaption>Team Println New Gen at the official eGovPH stage</figcaption>
+    </figure>
+
+    <figure class="carousel-card">
+      <div class="img-frame">
+        <img src="/images/hackathons/egovph-2026/with-bryl-lim.jpg" alt="Team with AI engineer Bryl Lim" loading="lazy" />
+      </div>
+      <figcaption>With tech idol Bryl Lim</figcaption>
+    </figure>
+
+    <figure class="carousel-card">
+      <div class="img-frame">
+        <img src="/images/hackathons/egovph-2026/with-boss-rod.png" alt="With Code with Boss Rod" loading="lazy" />
+      </div>
+      <figcaption>With Boss Rod (Code with Boss Rod)</figcaption>
+    </figure>
+
+    <figure class="carousel-card">
+      <div class="img-frame">
+        <img src="/images/hackathons/egovph-2026/badges.jpg" alt="Hackathon Participant Badges - Vince, Julius, Adrian" loading="lazy" />
+      </div>
+      <figcaption>Our official DICT eGovPH delegate badges</figcaption>
+    </figure>
+
+    <figure class="carousel-card">
+      <div class="img-frame">
+        <img src="/images/hackathons/egovph-2026/hall-session.jpg" alt="Auditorium hall at SMX Aura BGC" loading="lazy" />
+      </div>
+      <figcaption>In the SMX Aura main auditorium</figcaption>
+    </figure>
+
+    <figure class="carousel-card">
+      <div class="img-frame">
+        <img src="/images/hackathons/egovph-2026/smart-cards.jpg" alt="Futuristic collectible NFC badges" loading="lazy" />
+      </div>
+      <figcaption>Commemorative NFC badges from the event</figcaption>
+    </figure>
+  </div>
 </div>

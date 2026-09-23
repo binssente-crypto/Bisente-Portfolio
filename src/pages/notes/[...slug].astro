@@ -86,7 +86,7 @@ h1 {
   gap: 0.5rem;
 }
 .skill-tag {
-  background: #FFF;
+  background: var(--surface);
   border: 1px solid var(--rail);
   color: var(--ink);
   padding: 0.25rem 0.75rem;
@@ -96,5 +96,31 @@ h1 {
 }
 .note-content {
   line-height: 1.75;
+  color: var(--ink-2);
+}
+.note-content :global(h2), .note-content :global(h3) {
+  color: var(--ink);
+  margin-top: 2rem;
+  margin-bottom: 0.75rem;
+  border-bottom: 1px solid var(--rail);
+  padding-bottom: 0.4rem;
+}
+.note-content :global(strong) {
+  color: var(--ink);
+}
+.note-content :global(p) {
+  margin-bottom: 1.25rem;
+}
+.note-content :global(ul) {
+  padding-left: 1.25rem;
+  margin-bottom: 1.5rem;
+}
+.note-content :global(li) {
+  margin-bottom: 0.5rem;
+}
+.note-content :global(hr) {
+  border: none;
+  border-top: 1px solid var(--rail);
+  margin: 2rem 0;
 }
 </style>

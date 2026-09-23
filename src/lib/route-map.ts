@@ -152,12 +152,24 @@ export function buildRouteMap(entries: MapEntry[], now: Date): Layout {
       const anchor = i.x - lw / 2 < LEFT ? 'start' : i.x + lw / 2 > W - 8 ? 'end' : 'middle';
       const left = anchor === 'start' ? i.x - i.hw : anchor === 'end' ? i.x + i.hw - lw : i.x - lw / 2;
       let below = false;
+      let label = i.label;
       if (i.label && i.shape !== 'pill') {
-        below = left < reach.above + 8 && left >= reach.below + 8;
-        reach[below ? 'below' : 'above'] = left + lw;
+        const canAbove = left >= reach.above + 8;
+        const canBelow = left >= reach.below + 8;
+        if (canAbove) {
+          below = false;
+          reach.above = left + lw;
+        } else if (canBelow) {
+          below = true;
+          reach.below = left + lw;
+        } else {
+          // Suppress static SVG text if both above and below collide with nearby labels
+          label = '';
+        }
       }
       stations.push({
         ...i,
+        label,
         x: n1(i.x),
         y: LANE_Y[line],
         labelAnchor: anchor,

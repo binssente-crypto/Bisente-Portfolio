@@ -60,17 +60,77 @@ const slug = (s: string) =>
 
 const skillsOf = (skills: string[]) => skills.map(slug).join(' ');
 
-// The 10 most-used skills become filter chips.
-const count = new Map<string, number>();
-for (const e of entries) {
-  for (const s of e.skills) {
-    count.set(s, (count.get(s) ?? 0) + 1);
-  }
-}
-const chips = [...count]
-  .sort((a, b) => b[1] - a[1] || a[0].localeCompare(b[0]))
-  .slice(0, 10)
-  .map(([s]) => s);
+// Comprehensive Kanban-style skills grouped by category with SVG icons
+const skillCategories = [
+  {
+    name: 'Languages & Core',
+    color: '#00E5FF',
+    skills: [
+      { name: 'JavaScript', slug: 'javascript', icon: 'js' },
+      { name: 'TypeScript', slug: 'typescript', icon: 'ts' },
+      { name: 'Python', slug: 'python', icon: 'python' },
+      { name: 'PHP', slug: 'php', icon: 'php' },
+      { name: 'SQL', slug: 'sql', icon: 'db' },
+      { name: 'HTML5', slug: 'html5', icon: 'html' },
+      { name: 'CSS3', slug: 'css3', icon: 'css' },
+      { name: 'Bash', slug: 'bash', icon: 'terminal' },
+    ],
+  },
+  {
+    name: 'Frontend & UI',
+    color: '#A855F7',
+    skills: [
+      { name: 'React', slug: 'react', icon: 'react' },
+      { name: 'Next.js', slug: 'next-js', icon: 'next' },
+      { name: 'Vue.js', slug: 'vue-js', icon: 'vue' },
+      { name: 'Pinia', slug: 'pinia', icon: 'pinia' },
+      { name: 'TailwindCSS', slug: 'tailwindcss', icon: 'tailwind' },
+      { name: 'Bootstrap', slug: 'bootstrap', icon: 'bootstrap' },
+      { name: 'SVG / Canvas', slug: 'svg', icon: 'vector' },
+    ],
+  },
+  {
+    name: 'Backend & APIs',
+    color: '#FF6B00',
+    skills: [
+      { name: 'Node.js', slug: 'node-js', icon: 'node' },
+      { name: 'Express', slug: 'express', icon: 'server' },
+      { name: 'Laravel', slug: 'laravel', icon: 'laravel' },
+      { name: 'Django', slug: 'django', icon: 'django' },
+      { name: 'FastAPI', slug: 'fastapi', icon: 'fastapi' },
+      { name: 'REST APIs', slug: 'apis', icon: 'api' },
+      { name: 'WebSockets', slug: 'websockets', icon: 'socket' },
+      { name: 'Docker', slug: 'docker', icon: 'docker' },
+    ],
+  },
+  {
+    name: 'Cybersecurity & Defense',
+    color: '#00FF9D',
+    skills: [
+      { name: 'Cybersecurity', slug: 'cybersecurity', icon: 'shield' },
+      { name: 'SOC Operations', slug: 'soc-operations', icon: 'radar' },
+      { name: 'Incident Response', slug: 'incident-response', icon: 'alert' },
+      { name: 'Network Defense', slug: 'network-defense', icon: 'firewall' },
+      { name: 'Threat Intel', slug: 'threat-intelligence', icon: 'intel' },
+      { name: 'Packet Analysis', slug: 'packet-analysis', icon: 'packet' },
+      { name: 'Cisco IOS', slug: 'cisco-ios', icon: 'cisco' },
+      { name: 'Linux Security', slug: 'linux-security', icon: 'linux' },
+    ],
+  },
+  {
+    name: 'Databases & Cloud',
+    color: '#38BDF8',
+    skills: [
+      { name: 'PostgreSQL', slug: 'postgresql', icon: 'postgres' },
+      { name: 'MySQL', slug: 'mysql', icon: 'mysql' },
+      { name: 'SQLite', slug: 'sqlite', icon: 'db' },
+      { name: 'Redis', slug: 'redis', icon: 'redis' },
+      { name: 'Prisma ORM', slug: 'prisma', icon: 'prisma' },
+      { name: 'Supabase', slug: 'supabase', icon: 'supabase' },
+      { name: 'Cloudflare', slug: 'cloudflare', icon: 'cloud' },
+    ],
+  },
+];
 
 const loop = `M${nowX - 27} 47C${nowX - 25} 32 ${nowX + 27} 30 ${nowX + 31} 49C${nowX + 34} 70 ${nowX - 28} 72 ${nowX - 33} 52`;
 const labelY = (s: (typeof layout.stations)[number]) =>
@@ -78,101 +138,270 @@ const labelY = (s: (typeof layout.stations)[number]) =>
 ---
 
 <section class="route-map" data-route-map aria-labelledby="rm-heading">
-  <h2 id="rm-heading" class="sr-only">Everything I've built, learned and written</h2>
+  <div class="rm-top-header">
+    <div class="rm-hud-badge">
+      <span class="hud-pulse"></span>
+      <span>MISSION TIMELINE & CAREER ROUTE</span>
+    </div>
+    <h2 id="rm-heading" class="rm-section-title">Interactive Journey Route Map</h2>
+    <p class="rm-sub-caption">Everything I've built, learned, defended, and written — displayed along chronological transit tracks.</p>
+  </div>
 
   <figure class="rm-figure">
-    <svg class="rm-svg" viewBox={`0 0 ${W} ${H}`} aria-hidden="true" focusable="false">
-      <defs>
-        <mask id="rm-reveal" maskUnits="userSpaceOnUse" x="0" y="0" width={W} height={H}>
-          <path class="rm-wipe" d={`M0 ${H / 2}H${W}`} pathLength="1" fill="none" stroke="#fff" stroke-width={H} />
-        </mask>
-      </defs>
-      <g class="rm-lines" mask="url(#rm-reveal)">
-        {layout.lanes.map((l) => (
-          <line class={`rm-line rm-${l.line}`} x1={layout.laneX1} y1={l.y} x2={nowX} y2={l.y} />
-        ))}
-      </g>
-      <g class="rm-connectors">
-        {layout.connectors.map((d) => (
-          <path d={d} />
-        ))}
-      </g>
-      <g class="rm-now">
-        <line x1={nowX} y1="72" x2={nowX} y2="334" />
-        <text x={nowX} y="56" text-anchor="middle">Now</text>
-        <path class="rm-loop" pathLength="1" d={loop} />
-      </g>
-      <g class="rm-stations">
-        {layout.stations.map((s) => (
-          <g
-            class={`rm-station rm-${s.line}`}
-            data-key={s.key}
-            data-x={s.x}
-            data-y={s.y}
-            data-skills={skillsOf(s.skills)}
-            data-caption={s.caption}
-            style={`--d:${s.delay}ms`}
-          >
-            <a href={s.href} tabindex="-1">
-              {s.shape === 'circle' ? (
-                <circle cx={s.x} cy={s.y} r={s.hw} />
-              ) : (
-                <rect
-                  x={+(s.x - s.hw).toFixed(1)}
-                  y={s.y - s.hh}
-                  width={s.hw * 2}
-                  height={s.hh * 2}
-                  rx={s.shape === 'pill' ? s.hh : 3}
-                />
-              )}
-            </a>
-          </g>
-        ))}
-      </g>
-      <g class="rm-labels">
-        {layout.stations
-          .filter((s) => s.label)
-          .map((s) => (
-            <text
-              class="rm-label"
-              x={s.x}
-              y={labelY(s)}
-              text-anchor={s.shape === 'pill' ? 'middle' : s.labelAnchor}
+    <div class="rm-figure-frame">
+      <svg class="rm-svg" viewBox={`0 0 ${W} ${H}`} aria-hidden="true" focusable="false">
+        <defs>
+          <mask id="rm-reveal" maskUnits="userSpaceOnUse" x="0" y="0" width={W} height={H}>
+            <path class="rm-wipe" d={`M0 ${H / 2}H${W}`} pathLength="1" fill="none" stroke="#fff" stroke-width={H} />
+          </mask>
+          <!-- Neon Glow Filters -->
+          <filter id="glow-orange" x="-20%" y="-20%" width="140%" height="140%">
+            <feDropShadow dx="0" dy="0" stdDeviation="3" flood-color="#FF6B00" flood-opacity="0.6"/>
+          </filter>
+          <filter id="glow-emerald" x="-20%" y="-20%" width="140%" height="140%">
+            <feDropShadow dx="0" dy="0" stdDeviation="3" flood-color="#00FF9D" flood-opacity="0.6"/>
+          </filter>
+          <filter id="glow-cyan" x="-20%" y="-20%" width="140%" height="140%">
+            <feDropShadow dx="0" dy="0" stdDeviation="3" flood-color="#00E5FF" flood-opacity="0.6"/>
+          </filter>
+        </defs>
+
+        <!-- Track Background Grid Lines -->
+        <g class="rm-grid-lines">
+          {layout.lanes.map((l) => (
+            <line class="rm-grid-lane" x1={layout.laneX1} y1={l.y} x2={nowX} y2={l.y} />
+          ))}
+        </g>
+
+        <!-- Glowing Active Neon Rails -->
+        <g class="rm-lines" mask="url(#rm-reveal)">
+          {layout.lanes.map((l) => (
+            <line class={`rm-line rm-${l.line}`} x1={layout.laneX1} y1={l.y} x2={nowX} y2={l.y} />
+          ))}
+        </g>
+
+        <!-- Cyber Circuit Connectors -->
+        <g class="rm-connectors">
+          {layout.connectors.map((d) => (
+            <path d={d} />
+          ))}
+        </g>
+
+        <!-- Futuristic Temporal "Now" Line -->
+        <g class="rm-now">
+          <line x1={nowX} y1="72" x2={nowX} y2="334" />
+          <text x={nowX} y="54" text-anchor="middle" class="rm-now-text">LIVE NOW</text>
+          <path class="rm-loop" pathLength="1" d={loop} />
+        </g>
+
+        <!-- Station Waypoints -->
+        <g class="rm-stations">
+          {layout.stations.map((s) => (
+            <g
+              class={`rm-station rm-${s.line}`}
+              data-key={s.key}
+              data-x={s.x}
+              data-y={s.y}
               data-skills={skillsOf(s.skills)}
+              data-caption={s.caption}
               style={`--d:${s.delay}ms`}
             >
-              {s.label}
-            </text>
+              <a href={s.href} tabindex="-1">
+                {s.shape === 'circle' ? (
+                  <circle cx={s.x} cy={s.y} r={s.hw} />
+                ) : (
+                  <rect
+                    x={+(s.x - s.hw).toFixed(1)}
+                    y={s.y - s.hh}
+                    width={s.hw * 2}
+                    height={s.hh * 2}
+                    rx={s.shape === 'pill' ? s.hh : 4}
+                  />
+                )}
+              </a>
+            </g>
           ))}
-        {layout.lanes.map((l) => (
-          <>
-            <text class="rm-title" x="16" y={l.y - 3}>
-              {l.title}
-            </text>
-            <text class="rm-sub" x="16" y={l.y + 15}>
-              {l.subtitle}
-            </text>
-          </>
-        ))}
-      </g>
-      <g class="rm-marker">
-        <circle r="17" />
-      </g>
-    </svg>
+        </g>
+
+        <!-- Non-Colliding Clean Canvas Labels -->
+        <g class="rm-labels">
+          {layout.stations
+            .filter((s) => s.label)
+            .map((s) => (
+              <text
+                class="rm-label"
+                x={s.x}
+                y={labelY(s)}
+                text-anchor={s.shape === 'pill' ? 'middle' : s.labelAnchor}
+                data-skills={skillsOf(s.skills)}
+                style={`--d:${s.delay}ms`}
+              >
+                {s.label}
+              </text>
+            ))}
+          {layout.lanes.map((l) => (
+            <g class="rm-lane-legend">
+              <text class="rm-title" x="16" y={l.y - 4}>
+                {l.title}
+              </text>
+              <text class="rm-sub" x="16" y={l.y + 14}>
+                {l.subtitle}
+              </text>
+            </g>
+          ))}
+        </g>
+
+        <!-- Active Targeting Marker -->
+        <g class="rm-marker">
+          <circle r="16" class="rm-marker-outer" />
+          <circle r="5" class="rm-marker-inner" />
+        </g>
+      </svg>
+    </div>
+
+    <!-- Active Station HUD Info Bar -->
     <figcaption class="rm-caption" data-rm="caption">
-      Everything I've built, learned and written, in the order it happened.
+      <div class="caption-content">
+        <span class="caption-pulse"></span>
+        <span class="caption-text">Select or hover over any track waypoint to inspect mission details.</span>
+      </div>
     </figcaption>
   </figure>
 
-  <div class="rm-chips" role="group" aria-label="Show entries that use a skill" data-rm="chips" hidden>
-    {chips.map((c) => (
-      <button type="button" aria-pressed="false" data-skill={slug(c)}>
-        {c}
-      </button>
-    ))}
+  <!-- KANBAN-STYLE TECHNICAL SKILLS MATRIX (STYLE OF REFERENCE PHOTO) -->
+  <div class="skills-board-container">
+    <div class="skills-board-header">
+      <div class="sb-title-box">
+        <span class="sb-tag">ARSENAL & PROFICIENCIES</span>
+        <h3>Technical Skills Matrix</h3>
+      </div>
+      <p class="sb-desc">Select any skill pill below to filter waypoints and projects across the route map in real time.</p>
+    </div>
+
+    <div class="kanban-grid" data-rm="chips" role="group" aria-label="Show entries that use a skill">
+      {skillCategories.map((col) => (
+        <div class="kanban-column" style={`--col-accent: ${col.color};`}>
+          <div class="kanban-column-header">
+            <span class="column-dot"></span>
+            <span class="column-name">{col.name}</span>
+            <span class="column-count">{col.skills.length}</span>
+          </div>
+          <div class="column-pills">
+            {col.skills.map((sk) => (
+              <button
+                type="button"
+                aria-pressed="false"
+                data-skill={sk.slug}
+                class="skill-pill-btn"
+                title={`Filter timeline by ${sk.name}`}
+              >
+                <!-- Compact inline SVG icons -->
+                {sk.icon === 'js' && (
+                  <svg width="13" height="13" viewBox="0 0 24 24" fill="currentColor" class="pill-icon js-icon">
+                    <rect width="24" height="24" rx="3" fill="#F7DF1E"/>
+                    <path d="M12.5 15.5c0 2.2 1.3 3.3 3.3 3.3 1.5 0 2.6-.7 3.2-1.7l-1.6-1c-.4.6-.9.9-1.6.9-.9 0-1.4-.5-1.4-1.5V9.5h-1.9v6zm-6.2.7c.6.9 1.4 1.4 2.5 1.4 1.3 0 2.1-.7 2.1-1.7 0-1.2-.8-1.6-2.2-2.2-1.6-.7-2.7-1.5-2.7-3.1 0-1.8 1.4-3.1 3.5-3.1 1.6 0 2.7.6 3.4 1.8l-1.6 1c-.4-.7-.9-1-1.8-1-1 0-1.6.6-1.6 1.3 0 .9.6 1.3 1.8 1.8 1.9.8 3.1 1.6 3.1 3.4 0 2.1-1.6 3.4-4 3.4-2.1 0-3.4-1-4.1-2.4l1.5-1.1z" fill="#000"/>
+                  </svg>
+                )}
+                {sk.icon === 'ts' && (
+                  <svg width="13" height="13" viewBox="0 0 24 24" fill="currentColor" class="pill-icon ts-icon">
+                    <rect width="24" height="24" rx="3" fill="#3178C6"/>
+                    <path d="M14.5 10.5h-3v8h-2v-8h-3v-2h8v2zm7 3.3c-.3-.2-.8-.4-1.3-.4-.7 0-1.1.3-1.1.7 0 .5.5.7 1.4 1 1.4.5 2.2 1.2 2.2 2.4 0 1.6-1.3 2.6-3.2 2.6-1.3 0-2.3-.4-3-1.1l1.1-1.3c.6.5 1.2.8 1.9.8.8 0 1.3-.4 1.3-.9 0-.4-.4-.7-1.3-.9-1.5-.5-2.3-1.1-2.3-2.4 0-1.5 1.2-2.5 3-2.5 1.1 0 2 .3 2.6.7l-1.3 1.3z" fill="#FFF"/>
+                  </svg>
+                )}
+                {sk.icon === 'python' && (
+                  <svg width="13" height="13" viewBox="0 0 24 24" fill="currentColor" class="pill-icon">
+                    <path d="M11.9 2c-5.2 0-4.9 2.3-4.9 2.3l.1 2.3h4.9v.7H5.2S2 7 2 12.2c0 5.2 2.8 5 2.8 5l1.7-.1v-2.3s-.1-2.8 2.8-2.8h4.8s2.7 0 2.7-2.6V4.7S17.1 2 11.9 2zm-1.4 1.5c.5 0 .9.4.9.9s-.4.9-.9.9-.9-.4-.9-.9.4-.9.9-.9z" fill="#387EB8"/>
+                    <path d="M12.1 22c5.2 0 4.9-2.3 4.9-2.3l-.1-2.3h-4.9v-.7h6.8s3.2.3 3.2-4.9c0-5.2-2.8-5-2.8-5l-1.7.1v2.3s.1 2.8-2.8 2.8H9.9s-2.7 0-2.7 2.6v4.7s-.3 2.7 4.9 2.7zm1.4-1.5c-.5 0-.9-.4-.9-.9s.4-.9.9-.9.9.4.9.9-.4.9-.9.9z" fill="#FFE052"/>
+                  </svg>
+                )}
+                {sk.icon === 'php' && (
+                  <svg width="13" height="13" viewBox="0 0 24 24" fill="currentColor" class="pill-icon">
+                    <path d="M7 6c-2.8 0-5 2.2-5 5s2.2 5 5 5c1.4 0 2.7-.6 3.6-1.5l1.4 1.5h2l2-10H14l-.6 3h-2.1C10.4 7.2 8.8 6 7 6zm0 2.5c1.4 0 2.5 1.1 2.5 2.5s-1.1 2.5-2.5 2.5S4.5 12.4 4.5 11 5.6 8.5 7 8.5zm11.5-2.5c-2.8 0-5 2.2-5 5s2.2 5 5 5 5-2.2 5-5-2.2-5-5-5zm0 2.5c1.4 0 2.5 1.1 2.5 2.5s-1.1 2.5-2.5 2.5-2.5-1.1-2.5-2.5 1.1-2.5 2.5-2.5z" fill="#777BB4"/>
+                  </svg>
+                )}
+                {sk.icon === 'react' && (
+                  <svg width="13" height="13" viewBox="0 0 24 24" fill="none" stroke="#00D8FF" stroke-width="2" class="pill-icon">
+                    <circle cx="12" cy="12" r="2" fill="#00D8FF"/>
+                    <ellipse cx="12" cy="12" rx="10" ry="4.5"/>
+                    <ellipse cx="12" cy="12" rx="10" ry="4.5" transform="rotate(60 12 12)"/>
+                    <ellipse cx="12" cy="12" rx="10" ry="4.5" transform="rotate(120 12 12)"/>
+                  </svg>
+                )}
+                {sk.icon === 'next' && (
+                  <svg width="13" height="13" viewBox="0 0 24 24" fill="currentColor" class="pill-icon">
+                    <circle cx="12" cy="12" r="11" fill="#000" stroke="#FFF" stroke-width="1.5"/>
+                    <path d="M15.5 8.5v7l-6-7v7" stroke="#FFF" stroke-width="1.8" stroke-linecap="round" stroke-linejoin="round"/>
+                  </svg>
+                )}
+                {sk.icon === 'vue' && (
+                  <svg width="13" height="13" viewBox="0 0 24 24" fill="currentColor" class="pill-icon">
+                    <polygon points="12 19 2 2 6.5 2 12 11.5 17.5 2 22 2" fill="#41B883"/>
+                    <polygon points="12 14.5 6.5 5 9.5 5 12 9.5 14.5 5 17.5 5" fill="#35495E"/>
+                  </svg>
+                )}
+                {sk.icon === 'tailwind' && (
+                  <svg width="13" height="13" viewBox="0 0 24 24" fill="#38BDF8" class="pill-icon">
+                    <path d="M12 6c-3 0-4.5 1.5-4.5 4.5 1-1.5 2.5-2 4.5-1.5 1.8.5 2.8 2 4.5 2 3 0 4.5-1.5 4.5-4.5-1 1.5-2.5 2-4.5 1.5-1.8-.5-2.8-2-4.5-2zm-6 6c-3 0-4.5 1.5-4.5 4.5 1-1.5 2.5-2 4.5-1.5 1.8.5 2.8 2 4.5 2 3 0 4.5-1.5 4.5-4.5-1 1.5-2.5 2-4.5 1.5-1.8-.5-2.8-2-4.5-2z"/>
+                  </svg>
+                )}
+                {sk.icon === 'node' && (
+                  <svg width="13" height="13" viewBox="0 0 24 24" fill="#68A063" class="pill-icon">
+                    <path d="M12 2l9 5.2v10.4L12 22.8 3 17.6V7.2L12 2z"/>
+                  </svg>
+                )}
+                {sk.icon === 'shield' && (
+                  <svg width="13" height="13" viewBox="0 0 24 24" fill="none" stroke="#00FF9D" stroke-width="2" class="pill-icon">
+                    <path d="M12 22s8-4 8-10V5l-8-3-8 3v7c0 6 8 10 8 10z"/>
+                  </svg>
+                )}
+                {sk.icon === 'radar' && (
+                  <svg width="13" height="13" viewBox="0 0 24 24" fill="none" stroke="#00FF9D" stroke-width="2" class="pill-icon">
+                    <circle cx="12" cy="12" r="10"/><path d="M12 2a10 10 0 0 1 10 10"/><line x1="12" y1="12" x2="19" y2="5"/>
+                  </svg>
+                )}
+                {sk.icon === 'firewall' && (
+                  <svg width="13" height="13" viewBox="0 0 24 24" fill="none" stroke="#00FF9D" stroke-width="2" class="pill-icon">
+                    <rect x="3" y="3" width="18" height="18" rx="2"/><line x1="3" y1="9" x2="21" y2="9"/><line x1="3" y1="15" x2="21" y2="15"/><line x1="9" y1="3" x2="9" y2="9"/><line x1="15" y1="9" x2="15" y2="15"/><line x1="9" y1="15" x2="9" y2="21"/>
+                  </svg>
+                )}
+                {sk.icon === 'db' && (
+                  <svg width="13" height="13" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" class="pill-icon">
+                    <ellipse cx="12" cy="5" rx="9" ry="3"/><path d="M21 12c0 1.66-4 3-9 3s-9-1.34-9-3"/><path d="M3 5v14c0 1.66 4 3 9 3s9-1.34 9-3V5"/>
+                  </svg>
+                )}
+                {sk.icon === 'postgres' && (
+                  <svg width="13" height="13" viewBox="0 0 24 24" fill="#336791" class="pill-icon">
+                    <ellipse cx="12" cy="6" rx="8" ry="3"/><path d="M4 6v10c0 1.6 3.6 3 8 3s8-1.4 8-3V6" fill="none" stroke="#336791" stroke-width="2"/>
+                  </svg>
+                )}
+                {sk.icon === 'redis' && (
+                  <svg width="13" height="13" viewBox="0 0 24 24" fill="#DC382D" class="pill-icon">
+                    <path d="M12 2L2 7l10 5 10-5-10-5zm0 9l-10-5v6l10 5 10-5v-6l-10 5zm0 6l-10-5v5l10 5 10-5v-5l-10 5z"/>
+                  </svg>
+                )}
+                {sk.icon === 'docker' && (
+                  <svg width="13" height="13" viewBox="0 0 24 24" fill="#2496ED" class="pill-icon">
+                    <path d="M22 12c-.5-1.2-1.8-1.8-3-1.6-.2-1-.8-1.8-1.8-2.2-.2 0-.4-.1-.6-.1-.3-.6-.8-1.2-1.5-1.5l-.6-.2-.4.4c-.6.6-1 1.4-1.1 2.2H2v6c0 3.3 2.7 6 6 6h8c3.3 0 6-2.7 6-6v-3z"/>
+                  </svg>
+                )}
+                {/* Fallback default tech icon if not matched above */}
+                {!['js','ts','python','php','react','next','vue','tailwind','node','shield','radar','firewall','db','postgres','redis','docker'].includes(sk.icon) && (
+                  <svg width="12" height="12" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" class="pill-icon">
+                    <polyline points="16 18 22 12 16 6"></polyline><polyline points="8 6 2 12 8 18"></polyline>
+                  </svg>
+                )}
+                <span>{sk.name}</span>
+              </button>
+            ))}
+          </div>
+        </div>
+      ))}
+    </div>
   </div>
+
   <p class="sr-only" role="status" data-rm="status"></p>
 
+  <!-- Semantic Navigation Lists -->
   <div class="rm-lists">
     {layout.lanes.map((l) => (
       <section class={`rm-list rm-${l.line}`}>
@@ -197,59 +426,409 @@ const labelY = (s: (typeof layout.stations)[number]) =>
 
 <style is:global>
 .route-map {
-  max-width: 1100px;
+  max-width: 1080px;
   margin-inline: auto;
   color: var(--ink);
   font-family: var(--font);
 }
-.rm-projects { --lane: var(--projects); --lane-text: var(--projects-text); }
-.rm-learning { --lane: var(--learning); --lane-text: var(--learning-text); }
-.rm-notes    { --lane: var(--notes);    --lane-text: var(--notes-text); }
 
-/* ---- the map ---- */
-.rm-figure { margin: 0; }
-.rm-svg { display: block; width: 100%; height: auto; aspect-ratio: 1000 / 352; }
-.rm-svg text { font: 700 13px var(--font); fill: var(--ink); pointer-events: none; }
-.rm-svg .rm-title { font-size: 15px; }
-.rm-svg .rm-sub { font-weight: 400; font-size: 12.5px; fill: var(--ink-2); }
-.rm-line { stroke: var(--lane); stroke-width: 6; stroke-linecap: round; }
-.rm-line.rm-notes { stroke-dasharray: 14 6; stroke-linecap: butt; }
-.rm-connectors path { fill: none; stroke: var(--ink-2); stroke-width: 3; stroke-linejoin: round; }
-.rm-now line { stroke: var(--ink-2); stroke-width: 1; stroke-dasharray: 4 4; }
-.rm-now text { font-size: 15px; }
-.rm-loop { fill: none; stroke: var(--ink); stroke-width: 1.5; stroke-linecap: round; }
-.rm-station { transform-box: fill-box; transform-origin: center; }
-.rm-station :is(circle, rect) { fill: var(--paper); stroke: var(--lane); stroke-width: 2.5; }
-.rm-station.is-active :is(circle, rect) { stroke-width: 4; }
-.rm-station[data-dim], .rm-label[data-dim] { opacity: 0.2; }
-.rm-marker { fill: none; stroke: var(--ink); stroke-width: 2; opacity: 0; pointer-events: none;
-  transform: translate(calc(var(--mx, 0) * 1px), calc(var(--my, 0) * 1px)); }
-.rm-marker.is-on { opacity: 1; }
-.rm-caption { min-height: 1.5em; margin: 0.5rem 0 0; color: var(--ink-2); }
+.rm-top-header {
+  margin-bottom: 1.5rem;
+}
+.rm-hud-badge {
+  display: inline-flex;
+  align-items: center;
+  gap: 0.5rem;
+  background: rgba(0, 229, 255, 0.1);
+  border: 1px solid rgba(0, 229, 255, 0.3);
+  padding: 0.25rem 0.65rem;
+  border-radius: 999px;
+  font-size: 0.75rem;
+  font-weight: 800;
+  letter-spacing: 0.06em;
+  color: var(--notes);
+  margin-bottom: 0.5rem;
+}
+.hud-pulse {
+  width: 6px;
+  height: 6px;
+  border-radius: 50%;
+  background: var(--notes);
+  box-shadow: 0 0 8px var(--notes);
+  animation: hud-blink 1.5s infinite ease-in-out;
+}
+@keyframes hud-blink {
+  0%, 100% { opacity: 1; transform: scale(1); }
+  50% { opacity: 0.3; transform: scale(0.8); }
+}
 
-/* ---- skill chips ---- */
-.rm-chips { display: flex; flex-wrap: wrap; gap: 0.5rem; margin-top: 1.5rem; }
-.rm-chips button { min-height: 44px; padding: 0 1rem; border: 2px solid var(--ink); border-radius: 999px;
-  background: transparent; color: var(--ink); font: inherit; cursor: pointer; }
-.rm-chips button[aria-pressed='true'] { background: var(--ink); color: var(--paper); }
+.rm-section-title {
+  margin: 0.25rem 0 0.5rem;
+  font-size: 1.85rem;
+  color: var(--ink);
+}
+.rm-sub-caption {
+  margin: 0;
+  color: var(--ink-2);
+  font-size: 1rem;
+}
 
-/* ---- semantic navigation lists ---- */
-.rm-lists { display: grid; grid-template-columns: repeat(3, minmax(0, 1fr)); gap: 2.5rem; margin-top: 2rem; }
-.rm-list h3 { margin: 0 0 0.75rem; padding-bottom: 0.5rem; border-bottom: 3px solid var(--lane);
-  color: var(--lane-text); font-size: 1.0625rem; }
-.rm-list ul { margin: 0; padding: 0; list-style: none; }
-.rm-list a { display: grid; grid-template-columns: 1.5rem 1fr; align-items: baseline; min-height: 44px;
-  padding: 0.5rem 0; color: var(--ink); text-decoration: none; }
-.rm-list a::before { content: ''; grid-column: 1; grid-row: 1 / span 2; box-sizing: border-box; width: 12px; height: 12px;
-  border: 2.5px solid var(--lane); border-radius: 50%; background: var(--paper); }
-.rm-learning a::before { border-radius: 3px; }
-.rm-list a[data-key^='cluster/']::before { width: 20px; border-radius: 999px; }
-.rm-list b { grid-column: 2; font-weight: 700; }
-.rm-list small { grid-column: 2; color: var(--ink-2); font-size: 0.9375rem; }
-.rm-list a:hover b { text-decoration: underline; }
-.rm-list a:focus-visible, .rm-chips button:focus-visible { outline: 3px solid var(--ink); outline-offset: 3px; }
+.rm-projects { --lane: var(--projects); --lane-text: var(--projects-text); --glow: var(--projects-glow); }
+.rm-learning { --lane: var(--learning); --lane-text: var(--learning-text); --glow: var(--learning-glow); }
+.rm-notes    { --lane: var(--notes);    --lane-text: var(--notes-text);    --glow: var(--notes-glow); }
 
-/* ---- small screens: map becomes a banner, lists do the work ---- */
+/* ---- THE MAP DISPLAY ---- */
+.rm-figure {
+  margin: 1.5rem 0 0;
+}
+.rm-figure-frame {
+  background: rgba(11, 16, 28, 0.95);
+  border: 1px solid rgba(0, 229, 255, 0.2);
+  border-radius: 16px;
+  padding: 1rem 0.5rem;
+  box-shadow: 0 12px 36px rgba(0, 0, 0, 0.6), inset 0 0 40px rgba(0, 229, 255, 0.03);
+  position: relative;
+  overflow: hidden;
+}
+.rm-figure-frame::before {
+  content: '';
+  position: absolute;
+  top: 0; left: 0; right: 0; height: 1px;
+  background: linear-gradient(90deg, transparent, rgba(0, 229, 255, 0.6), transparent);
+}
+
+.rm-svg {
+  display: block;
+  width: 100%;
+  height: auto;
+  aspect-ratio: 1000 / 352;
+}
+.rm-svg text {
+  font: 700 12px var(--font);
+  fill: #E2E8F0;
+  pointer-events: none;
+}
+.rm-svg .rm-title {
+  font-size: 14px;
+  letter-spacing: 0.03em;
+  font-weight: 800;
+  fill: #F8FAFC;
+}
+.rm-svg .rm-sub {
+  font-weight: 500;
+  font-size: 11.5px;
+  fill: var(--ink-3);
+}
+
+.rm-grid-lane {
+  stroke: rgba(255, 255, 255, 0.06);
+  stroke-width: 12;
+  stroke-linecap: round;
+}
+
+.rm-line {
+  stroke: var(--lane);
+  stroke-width: 6;
+  stroke-linecap: round;
+  filter: drop-shadow(0 0 4px var(--glow));
+}
+.rm-line.rm-notes {
+  stroke-dasharray: 12 6;
+  stroke-linecap: butt;
+}
+.rm-connectors path {
+  fill: none;
+  stroke: rgba(148, 163, 184, 0.45);
+  stroke-width: 2.5;
+  stroke-linejoin: round;
+  stroke-dasharray: 4 2;
+}
+.rm-now line {
+  stroke: #00E5FF;
+  stroke-width: 1.5;
+  stroke-dasharray: 4 4;
+  opacity: 0.8;
+}
+.rm-now-text {
+  font-size: 12px !important;
+  font-weight: 800 !important;
+  fill: #00E5FF !important;
+  letter-spacing: 0.08em;
+}
+.rm-loop {
+  fill: none;
+  stroke: #00E5FF;
+  stroke-width: 1.5;
+  stroke-linecap: round;
+  opacity: 0.7;
+}
+
+.rm-station {
+  transform-box: fill-box;
+  transform-origin: center;
+  cursor: pointer;
+}
+.rm-station :is(circle, rect) {
+  fill: #0B101D;
+  stroke: var(--lane);
+  stroke-width: 2.5;
+  transition: all 0.15s ease;
+}
+.rm-station:hover :is(circle, rect),
+.rm-station.is-active :is(circle, rect) {
+  fill: var(--lane);
+  stroke: #FFF;
+  stroke-width: 3.5;
+  filter: drop-shadow(0 0 8px var(--lane));
+}
+.rm-station.is-active {
+  transform: scale(1.3);
+}
+.rm-station[data-dim], .rm-label[data-dim] {
+  opacity: 0.15;
+}
+
+.rm-marker-outer {
+  fill: none;
+  stroke: #00E5FF;
+  stroke-width: 2;
+  stroke-dasharray: 4 2;
+  animation: reticle-spin 6s linear infinite;
+  transform-origin: center;
+}
+.rm-marker-inner {
+  fill: #00E5FF;
+}
+@keyframes reticle-spin {
+  from { transform: rotate(0deg); }
+  to { transform: rotate(360deg); }
+}
+
+.rm-marker {
+  opacity: 0;
+  pointer-events: none;
+  transform: translate(calc(var(--mx, 0) * 1px), calc(var(--my, 0) * 1px));
+}
+.rm-marker.is-on {
+  opacity: 1;
+}
+
+.rm-caption {
+  margin: 0.75rem 0 0;
+}
+.caption-content {
+  display: flex;
+  align-items: center;
+  gap: 0.65rem;
+  background: rgba(13, 19, 34, 0.85);
+  border: 1px solid var(--rail);
+  border-radius: 8px;
+  padding: 0.65rem 1rem;
+  font-size: 0.95rem;
+  color: var(--ink);
+}
+.caption-pulse {
+  width: 8px;
+  height: 8px;
+  border-radius: 50%;
+  background: var(--learning);
+  box-shadow: 0 0 8px var(--learning);
+}
+
+/* ---- KANBAN SKILLS MATRIX (STYLE OF PHOTO 2) ---- */
+.skills-board-container {
+  margin-top: 3rem;
+  padding: 1.75rem;
+  background: rgba(13, 19, 34, 0.8);
+  border: 1px solid var(--rail);
+  border-radius: 16px;
+  box-shadow: 0 8px 30px rgba(0, 0, 0, 0.4);
+}
+.skills-board-header {
+  margin-bottom: 1.5rem;
+}
+.sb-tag {
+  display: inline-block;
+  font-size: 0.75rem;
+  font-weight: 800;
+  letter-spacing: 0.08em;
+  color: var(--notes);
+  margin-bottom: 0.25rem;
+}
+.sb-title-box h3 {
+  margin: 0 0 0.4rem;
+  font-size: 1.4rem;
+  color: var(--ink);
+}
+.sb-desc {
+  margin: 0;
+  font-size: 0.9rem;
+  color: var(--ink-2);
+}
+
+.kanban-grid {
+  display: grid;
+  grid-template-columns: repeat(5, minmax(0, 1fr));
+  gap: 1rem;
+}
+@media (max-width: 960px) {
+  .kanban-grid {
+    grid-template-columns: repeat(3, minmax(0, 1fr));
+  }
+}
+@media (max-width: 640px) {
+  .kanban-grid {
+    grid-template-columns: 1fr;
+  }
+}
+
+.kanban-column {
+  background: rgba(16, 24, 43, 0.6);
+  border: 1px solid rgba(255, 255, 255, 0.08);
+  border-radius: 12px;
+  padding: 0.85rem;
+  display: flex;
+  flex-direction: column;
+}
+.kanban-column-header {
+  display: flex;
+  align-items: center;
+  gap: 0.5rem;
+  padding-bottom: 0.65rem;
+  margin-bottom: 0.75rem;
+  border-bottom: 2px solid var(--col-accent);
+}
+.column-dot {
+  width: 8px;
+  height: 8px;
+  border-radius: 50%;
+  background: var(--col-accent);
+  box-shadow: 0 0 6px var(--col-accent);
+}
+.column-name {
+  font-size: 0.78rem;
+  font-weight: 800;
+  letter-spacing: 0.05em;
+  color: #F8FAFC;
+  flex: 1;
+}
+.column-count {
+  font-size: 0.75rem;
+  font-weight: 700;
+  background: rgba(255, 255, 255, 0.08);
+  color: var(--col-accent);
+  padding: 0.1rem 0.4rem;
+  border-radius: 999px;
+}
+
+.column-pills {
+  display: flex;
+  flex-direction: column;
+  gap: 0.45rem;
+}
+
+.skill-pill-btn {
+  display: inline-flex;
+  align-items: center;
+  gap: 0.45rem;
+  padding: 0.35rem 0.65rem;
+  border: 1px solid rgba(255, 255, 255, 0.1);
+  border-radius: 8px;
+  background: rgba(255, 255, 255, 0.03);
+  color: var(--ink);
+  font-family: inherit;
+  font-size: 0.8rem;
+  font-weight: 600;
+  cursor: pointer;
+  text-align: left;
+  transition: all 0.15s ease;
+}
+.skill-pill-btn:hover {
+  background: rgba(255, 255, 255, 0.08);
+  border-color: var(--col-accent);
+  transform: translateX(2px);
+}
+.skill-pill-btn[aria-pressed='true'] {
+  background: var(--col-accent);
+  color: #000;
+  border-color: var(--col-accent);
+  box-shadow: 0 0 10px var(--col-accent);
+  font-weight: 700;
+}
+.skill-pill-btn[aria-pressed='true'] svg {
+  filter: brightness(0);
+}
+.pill-icon {
+  flex-shrink: 0;
+}
+
+/* ---- SEMANTIC NAVIGATION LISTS ---- */
+.rm-lists {
+  display: grid;
+  grid-template-columns: repeat(3, minmax(0, 1fr));
+  gap: 2rem;
+  margin-top: 3rem;
+}
+.rm-list h3 {
+  margin: 0 0 0.85rem;
+  padding-bottom: 0.5rem;
+  border-bottom: 2px solid var(--lane);
+  color: var(--lane);
+  font-size: 1.1rem;
+  letter-spacing: 0.03em;
+}
+.rm-list ul {
+  margin: 0;
+  padding: 0;
+  list-style: none;
+}
+.rm-list a {
+  display: grid;
+  grid-template-columns: 1.5rem 1fr;
+  align-items: baseline;
+  min-height: 40px;
+  padding: 0.45rem 0.5rem;
+  color: var(--ink);
+  text-decoration: none;
+  border-radius: 6px;
+  transition: background 0.15s ease;
+}
+.rm-list a:hover {
+  background: rgba(255, 255, 255, 0.04);
+}
+.rm-list a::before {
+  content: '';
+  grid-column: 1;
+  grid-row: 1 / span 2;
+  box-sizing: border-box;
+  width: 10px;
+  height: 10px;
+  border: 2px solid var(--lane);
+  border-radius: 50%;
+  background: var(--paper);
+}
+.rm-learning a::before {
+  border-radius: 3px;
+}
+.rm-list a[data-key^='cluster/']::before {
+  width: 18px;
+  border-radius: 999px;
+}
+.rm-list b {
+  grid-column: 2;
+  font-weight: 600;
+  font-size: 0.95rem;
+}
+.rm-list small {
+  grid-column: 2;
+  color: var(--ink-2);
+  font-size: 0.85rem;
+}
+.rm-list a:hover b {
+  color: #FFF;
+  text-decoration: underline;
+}
+
 @media (max-width: 899px) {
   .rm-svg text { display: none; }
   .rm-lists { grid-template-columns: 1fr; gap: 2rem; }
@@ -258,7 +837,6 @@ const labelY = (s: (typeof layout.stations)[number]) =>
   .rm-station a { pointer-events: none; }
 }
 
-/* ---- motion: one intro, then only what the visitor triggers ---- */
 @media (prefers-reduced-motion: no-preference) {
   .rm-wipe { stroke-dasharray: 1; animation: rm-wipe 1.1s cubic-bezier(0.3, 0, 0.2, 1) 0.15s backwards; }
   .rm-station { animation: rm-pop 0.28s ease-out var(--d, 0ms) backwards; transition: transform 0.12s ease-out; }
@@ -337,7 +915,6 @@ function initRouteMap() {
 
     // Skill filter
     let skill = '';
-    chips.hidden = false;
     chips.addEventListener('click', (e) => {
       const b = (e.target as Element).closest<HTMLButtonElement>('button[data-skill]');
       if (!b) return;
@@ -357,12 +934,11 @@ function initRouteMap() {
       for (const list of root.querySelectorAll<HTMLElement>('.rm-list')) {
         list.hidden = !list.querySelector('li:not([hidden])');
       }
-      status.textContent = skill ? `Showing ${shown} entries that use ${b.textContent}.` : 'Showing all entries.';
+      status.textContent = skill ? `Showing ${shown} entries that use ${b.textContent?.trim()}.` : 'Showing all entries.';
     });
   }
 }
 
-// Support both standard loads and Astro View Transitions (astro:page-load)
 initRouteMap();
 document.addEventListener('astro:page-load', initRouteMap);
 </script>
