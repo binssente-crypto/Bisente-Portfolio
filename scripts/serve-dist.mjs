@@ -19,7 +19,14 @@ const server = http.createServer((req, res) => {
   if (urlPath === '' || urlPath.endsWith('/')) {
     urlPath += 'index.html';
   }
-  const filePath = path.join(distDir, urlPath);
+  const resolvedPath = path.resolve(distDir, '.' + urlPath);
+  const rel = path.relative(distDir, resolvedPath);
+  if (rel.startsWith('..') || path.isAbsolute(rel)) {
+    res.writeHead(403, { 'Content-Type': 'text/plain' });
+    res.end('Forbidden');
+    return;
+  }
+  const filePath = resolvedPath;
 
   if (fs.existsSync(filePath) && fs.statSync(filePath).isFile()) {
     const ext = path.extname(filePath).toLowerCase();
