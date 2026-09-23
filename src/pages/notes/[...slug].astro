@@ -1,0 +1,100 @@
+---
+import { getCollection, render } from 'astro:content';
+import Base from '../../layouts/Base.astro';
+
+export async function getStaticPaths() {
+  const notes = await getCollection('notes');
+  return notes.map((note) => ({
+    params: { slug: note.id },
+    props: { note },
+  }));
+}
+
+const { note } = Astro.props;
+const { Content } = await render(note);
+const year = new Date(note.data.date).getUTCFullYear();
+---
+
+<Base title={`${note.data.title} — Notes`}>
+  <article class="note-page">
+    <nav class="back-nav" aria-label="Navigation">
+      <a href="/" class="back-link">
+        <svg width="20" height="20" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round" aria-hidden="true">
+          <line x1="19" y1="12" x2="5" y2="12"></line>
+          <polyline points="12 19 5 12 12 5"></polyline>
+        </svg>
+        Back to Route Map
+      </a>
+    </nav>
+
+    <header class="note-header">
+      <span class="year-badge">{year}</span>
+      <h1>{note.data.title}</h1>
+      <div class="skills-wrap" aria-label="Related skills">
+        {note.data.skills.map((skill) => (
+          <span class="skill-tag">{skill}</span>
+        ))}
+      </div>
+    </header>
+
+    <div class="note-content">
+      <Content />
+    </div>
+  </article>
+</Base>
+
+<style>
+.note-page {
+  max-width: 800px;
+  margin: 0 auto;
+}
+.back-nav {
+  margin-bottom: 2rem;
+}
+.back-link {
+  display: inline-flex;
+  align-items: center;
+  gap: 0.5rem;
+  color: var(--ink-2);
+  text-decoration: none;
+  font-weight: 600;
+  font-size: 0.95rem;
+}
+.back-link:hover {
+  color: var(--ink);
+  text-decoration: underline;
+}
+.note-header {
+  margin-bottom: 2.5rem;
+  padding-bottom: 1.5rem;
+  border-bottom: 1px solid var(--rail);
+}
+.year-badge {
+  background: var(--notes);
+  color: #fff;
+  padding: 0.2rem 0.6rem;
+  border-radius: 4px;
+  font-size: 0.85rem;
+  font-weight: 700;
+}
+h1 {
+  margin: 0.75rem 0 1rem;
+}
+.skills-wrap {
+  display: flex;
+  flex-wrap: wrap;
+  gap: 0.5rem;
+}
+.skill-tag {
+  background: #FFF;
+  border: 1px solid var(--rail);
+  color: var(--ink);
+  padding: 0.25rem 0.75rem;
+  border-radius: 999px;
+  font-size: 0.85rem;
+  font-weight: 600;
+}
+.note-content {
+  line-height: 1.75;
+}
+</style>

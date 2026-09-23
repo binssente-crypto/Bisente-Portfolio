@@ -1,0 +1,317 @@
+---
+import { getCollection, render } from 'astro:content';
+import Base from '../../layouts/Base.astro';
+
+const credentials = await getCollection('credentials');
+credentials.sort((a, b) => {
+  // Put highlighted credentials first, then sort by date desc, then by title
+  if (a.data.highlight && !b.data.highlight) return -1;
+  if (!a.data.highlight && b.data.highlight) return 1;
+  const timeDiff = b.data.date.getTime() - a.data.date.getTime();
+  if (timeDiff !== 0) return timeDiff;
+  return a.data.title.localeCompare(b.data.title);
+});
+
+const credsWithRendered = await Promise.all(
+  credentials.map(async (cred) => {
+    const { Content } = await render(cred);
+    return { cred, Content };
+  })
+);
+---
+
+<Base title="Learning & Credentials | Mark Reizel Vincent C. Palma">
+  <div class="learning-page">
+    <nav class="back-nav" aria-label="Navigation">
+      <a href="/" class="back-link">
+        <svg width="20" height="20" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round" aria-hidden="true">
+          <line x1="19" y1="12" x2="5" y2="12"></line>
+          <polyline points="12 19 5 12 12 5"></polyline>
+        </svg>
+        Back to Route Map
+      </a>
+    </nav>
+
+    <header class="learning-header">
+      <div class="header-badge">Verified Achievements</div>
+      <h1>Learning & Credentials</h1>
+      <p class="subtitle">Official certifications from Cisco Networking Academy, IBM SkillsBuild, and DICT seminars.</p>
+      <div class="profile-verify-bar">
+        <span>Direct Credly Profile:</span>
+        <a href="https://www.credly.com/users/vincent-palma/badges" target="_blank" rel="noopener noreferrer" class="credly-btn">
+          <svg width="18" height="18" viewBox="0 0 24 24" fill="currentColor" aria-hidden="true">
+            <path d="M12 2C6.48 2 2 6.48 2 12s4.48 10 10 10 10-4.48 10-10S17.52 2 12 2zm-2 15l-5-5 1.41-1.41L10 14.17l7.59-7.59L19 8l-9 9z"/>
+          </svg>
+          View all 17 Badges on Credly
+        </a>
+      </div>
+    </header>
+
+    <div class="credentials-list">
+      {credsWithRendered.map(({ cred, Content }, index) => {
+        const clusterId = cred.data.cluster?.id;
+        const isFirstInCluster = clusterId && credsWithRendered.findIndex((c) => c.cred.data.cluster?.id === clusterId) === index;
+        return (
+          <article class={`cred-card ${cred.data.highlight ? 'highlight-card' : ''}`} id={cred.id}>
+            {isFirstInCluster && <a id={clusterId} class="cluster-anchor" aria-hidden="true"></a>}
+          {cred.data.badge && (
+            <div class="cred-badge-media">
+              <img src={cred.data.badge} alt={`${cred.data.title} badge`} width="80" height="80" loading="lazy" />
+            </div>
+          )}
+          <div class="cred-content">
+            <div class="cred-meta">
+              {cred.data.highlight && <span class="flagship-badge">Flagship Achievement</span>}
+              <span class="kind-badge">{cred.data.kind}</span>
+              <span class="issuer">{cred.data.issuer}</span>
+              {cred.data.cluster && <span class="cluster-label">{cred.data.cluster.label}</span>}
+              <span class="year">{new Date(cred.data.date).getUTCFullYear()}</span>
+            </div>
+            <h2>{cred.data.title}</h2>
+            <div class="cred-body">
+              <Content />
+            </div>
+            <div class="skills-wrap">
+              {cred.data.skills.map((s) => (
+                <span class="skill-tag">{s}</span>
+              ))}
+            </div>
+            <div class="cred-actions">
+              {cred.data.verifyUrl && (
+                <a href={cred.data.verifyUrl} target="_blank" rel="noopener noreferrer" class="action-btn verify-btn">
+                  <svg width="16" height="16" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round" aria-hidden="true">
+                    <path d="M18 13v6a2 2 0 0 1-2 2H5a2 2 0 0 1-2-2V8a2 2 0 0 1 2-2h6"></path>
+                    <polyline points="15 3 21 3 21 9"></polyline>
+                    <line x1="10" y1="14" x2="21" y2="3"></line>
+                  </svg>
+                  Verify on Credly
+                </a>
+              )}
+              {cred.data.pdf && (
+                <a href={cred.data.pdf} target="_blank" rel="noopener noreferrer" class="action-btn pdf-btn">
+                  <svg width="16" height="16" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round" aria-hidden="true">
+                    <path d="M14 2H6a2 2 0 0 0-2 2v16a2 2 0 0 0 2 2h12a2 2 0 0 0 2-2V8z"></path>
+                    <polyline points="14 2 14 8 20 8"></polyline>
+                    <line x1="16" y1="13" x2="8" y2="13"></line>
+                    <line x1="16" y1="17" x2="8" y2="17"></line>
+                    <polyline points="10 9 9 9 8 9"></polyline>
+                  </svg>
+                  Certificate PDF
+                </a>
+              )}
+            </div>
+          </div>
+        </article>
+        );
+      })}
+    </div>
+  </div>
+</Base>
+
+<style>
+.learning-page {
+  max-width: 860px;
+  margin: 0 auto;
+}
+.back-nav {
+  margin-bottom: 2rem;
+}
+.back-link {
+  display: inline-flex;
+  align-items: center;
+  gap: 0.5rem;
+  color: var(--ink-2);
+  text-decoration: none;
+  font-weight: 600;
+  font-size: 0.95rem;
+}
+.back-link:hover {
+  color: var(--ink);
+  text-decoration: underline;
+}
+.learning-header {
+  margin-bottom: 2.5rem;
+  padding-bottom: 1.5rem;
+  border-bottom: 1px solid var(--rail);
+}
+.header-badge {
+  display: inline-block;
+  font-size: 0.8rem;
+  font-weight: 700;
+  text-transform: uppercase;
+  letter-spacing: 0.05em;
+  color: var(--learning-text);
+  margin-bottom: 0.5rem;
+}
+.subtitle {
+  color: var(--ink-2);
+  font-size: 1.1rem;
+  margin: 0.5rem 0 1.25rem;
+}
+.profile-verify-bar {
+  display: flex;
+  align-items: center;
+  gap: 0.75rem;
+  flex-wrap: wrap;
+  font-size: 0.95rem;
+}
+.credly-btn {
+  display: inline-flex;
+  align-items: center;
+  gap: 0.4rem;
+  background: #ff6f00;
+  color: #fff;
+  padding: 0.4rem 0.8rem;
+  border-radius: 6px;
+  font-weight: 600;
+  font-size: 0.9rem;
+  text-decoration: none;
+  transition: opacity 0.15s ease;
+}
+.credly-btn:hover {
+  opacity: 0.9;
+}
+.credentials-list {
+  display: flex;
+  flex-direction: column;
+  gap: 1.5rem;
+}
+.cred-card {
+  position: relative;
+  display: grid;
+  grid-template-columns: auto 1fr;
+  gap: 1.5rem;
+  padding: 1.75rem;
+  background: #FFF;
+  border: 1px solid var(--rail);
+  border-radius: 12px;
+  box-shadow: 0 1px 3px rgba(15, 34, 51, 0.04);
+}
+.cluster-anchor {
+  position: absolute;
+  top: -1rem;
+  left: 0;
+  width: 0;
+  height: 0;
+  visibility: hidden;
+  pointer-events: none;
+}
+@media (max-width: 600px) {
+  .cred-card {
+    grid-template-columns: 1fr;
+  }
+}
+.highlight-card {
+  border: 2px solid var(--learning);
+  background: linear-gradient(to bottom right, #ffffff, #f4fbf8);
+}
+.cred-badge-media img {
+  width: 80px;
+  height: 80px;
+  object-fit: contain;
+}
+.cred-content {
+  display: flex;
+  flex-direction: column;
+}
+.cred-meta {
+  display: flex;
+  align-items: center;
+  gap: 0.6rem;
+  margin-bottom: 0.5rem;
+  font-size: 0.85rem;
+  flex-wrap: wrap;
+}
+.flagship-badge {
+  background: #0F2233;
+  color: #FFD700;
+  padding: 0.2rem 0.55rem;
+  border-radius: 4px;
+  font-size: 0.75rem;
+  font-weight: 800;
+  letter-spacing: 0.03em;
+  text-transform: uppercase;
+}
+.kind-badge {
+  background: var(--learning);
+  color: #fff;
+  padding: 0.15rem 0.5rem;
+  border-radius: 4px;
+  font-weight: 700;
+  text-transform: capitalize;
+}
+.issuer {
+  font-weight: 700;
+  color: var(--ink);
+}
+.cluster-label {
+  background: var(--paper);
+  color: var(--ink-2);
+  padding: 0.15rem 0.5rem;
+  border-radius: 4px;
+  font-weight: 600;
+}
+.year {
+  color: var(--ink-2);
+  margin-left: auto;
+  font-weight: 600;
+}
+h2 {
+  margin: 0.25rem 0 0.75rem;
+  font-size: 1.3rem;
+  line-height: 1.25;
+}
+.cred-body {
+  color: var(--ink);
+  font-size: 0.95rem;
+  line-height: 1.5;
+  margin-bottom: 0.85rem;
+}
+.skills-wrap {
+  display: flex;
+  flex-wrap: wrap;
+  gap: 0.4rem;
+  margin-bottom: 1.25rem;
+}
+.skill-tag {
+  background: var(--paper);
+  color: var(--ink);
+  padding: 0.2rem 0.6rem;
+  border-radius: 999px;
+  font-size: 0.8rem;
+  font-weight: 600;
+}
+.cred-actions {
+  display: flex;
+  gap: 0.75rem;
+  flex-wrap: wrap;
+}
+.action-btn {
+  display: inline-flex;
+  align-items: center;
+  gap: 0.4rem;
+  padding: 0.4rem 0.8rem;
+  border-radius: 6px;
+  font-size: 0.85rem;
+  font-weight: 600;
+  text-decoration: none;
+  transition: all 0.15s ease;
+}
+.verify-btn {
+  background: #FFF;
+  color: var(--ink);
+  border: 1px solid var(--rail);
+}
+.verify-btn:hover {
+  background: var(--paper);
+  border-color: var(--ink-2);
+}
+.pdf-btn {
+  background: var(--paper);
+  color: var(--ink);
+  border: 1px solid var(--rail);
+}
+.pdf-btn:hover {
+  background: #e2e8f0;
+}
+</style>

@@ -1,0 +1,232 @@
+---
+import { getCollection, render } from 'astro:content';
+import Base from '../../layouts/Base.astro';
+
+export async function getStaticPaths() {
+  const projects = await getCollection('projects');
+  return projects.map((project) => ({
+    params: { slug: project.id },
+    props: { project },
+  }));
+}
+
+const { project } = Astro.props;
+const { Content } = await render(project);
+const year = new Date(project.data.date).getUTCFullYear();
+---
+
+<Base title={`${project.data.title} — Projects`}>
+  <article class="project-page">
+    <nav class="back-nav" aria-label="Navigation">
+      <a href="/" class="back-link">
+        <svg width="20" height="20" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round" aria-hidden="true">
+          <line x1="19" y1="12" x2="5" y2="12"></line>
+          <polyline points="12 19 5 12 12 5"></polyline>
+        </svg>
+        Back to Route Map
+      </a>
+    </nav>
+
+    <header class="project-header">
+      {project.data.logo && (
+        <div class="project-logo-wrap">
+          <img src={project.data.logo} alt={`${project.data.title} logo`} class="project-logo" />
+        </div>
+      )}
+
+      <div class="meta-row">
+        <span class="year-badge">{year}</span>
+        {project.data.client && <span class="client-badge">{project.data.client}</span>}
+        {project.data.role && <span class="role-badge">{project.data.role}</span>}
+      </div>
+
+      <h1>{project.data.title}</h1>
+
+      <p class="outcome-callout">{project.data.outcome}</p>
+
+      {(project.data.links?.live || project.data.links?.repo || project.data.links?.demo) && (
+        <div class="live-action">
+          {project.data.links?.live && (
+            <a href={project.data.links.live} target="_blank" rel="noopener noreferrer" class="btn-live">
+              View Live Site
+              <svg width="16" height="16" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round" aria-hidden="true">
+                <path d="M18 13v6a2 2 0 0 1-2 2H5a2 2 0 0 1-2-2V8a2 2 0 0 1 2-2h6"></path>
+                <polyline points="15 3 21 3 21 9"></polyline>
+                <line x1="10" y1="14" x2="21" y2="3"></line>
+              </svg>
+            </a>
+          )}
+          {project.data.links?.repo && (
+            <a href={project.data.links.repo} target="_blank" rel="noopener noreferrer" class="btn-live btn-repo">
+              View Repository
+              <svg width="16" height="16" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round" aria-hidden="true">
+                <polyline points="16 18 22 12 16 6"></polyline>
+                <polyline points="8 6 2 12 8 18"></polyline>
+              </svg>
+            </a>
+          )}
+          {project.data.links?.demo && (
+            <a href={project.data.links.demo} target="_blank" rel="noopener noreferrer" class="btn-live btn-demo">
+              View Demo
+              <svg width="16" height="16" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round" aria-hidden="true">
+                <polygon points="5 3 19 12 5 21 5 3"></polygon>
+              </svg>
+            </a>
+          )}
+        </div>
+      )}
+
+      <div class="skills-wrap" aria-label="Technologies used">
+        {project.data.skills.map((skill) => (
+          <span class="skill-tag">{skill}</span>
+        ))}
+      </div>
+    </header>
+
+    <div class="project-content">
+      <Content />
+    </div>
+  </article>
+</Base>
+
+<style>
+.project-page {
+  max-width: 800px;
+  margin: 0 auto;
+}
+.back-nav {
+  margin-bottom: 2rem;
+}
+.back-link {
+  display: inline-flex;
+  align-items: center;
+  gap: 0.5rem;
+  color: var(--ink-2);
+  text-decoration: none;
+  font-weight: 600;
+  font-size: 0.95rem;
+  transition: color 0.15s ease;
+}
+.back-link:hover {
+  color: var(--ink);
+  text-decoration: underline;
+}
+.project-header {
+  margin-bottom: 3rem;
+  padding-bottom: 2rem;
+  border-bottom: 1px solid var(--rail);
+}
+.project-logo-wrap {
+  margin-bottom: 1.5rem;
+}
+.project-logo {
+  max-height: 80px;
+  max-width: 220px;
+  object-fit: contain;
+  border-radius: 8px;
+}
+.meta-row {
+  display: flex;
+  flex-wrap: wrap;
+  gap: 0.5rem;
+  align-items: center;
+  margin-bottom: 1rem;
+}
+.year-badge {
+  background: var(--projects);
+  color: #fff;
+  padding: 0.2rem 0.6rem;
+  border-radius: 4px;
+  font-size: 0.85rem;
+  font-weight: 700;
+}
+.client-badge, .role-badge {
+  background: #E2E8F0;
+  color: var(--ink);
+  padding: 0.2rem 0.6rem;
+  border-radius: 4px;
+  font-size: 0.85rem;
+  font-weight: 500;
+}
+h1 {
+  margin: 0.5rem 0 1rem;
+  color: var(--ink);
+}
+.outcome-callout {
+  font-size: 1.2rem;
+  line-height: 1.6;
+  color: var(--ink);
+  font-weight: 500;
+  margin-bottom: 1.5rem;
+}
+.live-action {
+  display: flex;
+  flex-wrap: wrap;
+  gap: 0.75rem;
+  margin-bottom: 1.5rem;
+}
+.btn-live {
+  display: inline-flex;
+  align-items: center;
+  gap: 0.5rem;
+  background: var(--ink);
+  color: var(--paper);
+  padding: 0.6rem 1.2rem;
+  border-radius: 999px;
+  font-weight: 600;
+  text-decoration: none;
+  font-size: 0.95rem;
+  transition: opacity 0.15s ease, background-color 0.15s ease;
+}
+.btn-live:hover {
+  opacity: 0.9;
+}
+.btn-repo {
+  background: #ffffff;
+  color: var(--ink);
+  border: 1px solid var(--rail);
+}
+.btn-repo:hover {
+  background: #f8fafc;
+  opacity: 1;
+}
+.btn-demo {
+  background: var(--projects);
+  color: #ffffff;
+}
+.btn-demo:hover {
+  opacity: 0.9;
+}
+.skills-wrap {
+  display: flex;
+  flex-wrap: wrap;
+  gap: 0.5rem;
+  margin-top: 1rem;
+}
+.skill-tag {
+  background: #FFF;
+  border: 1px solid var(--rail);
+  color: var(--ink);
+  padding: 0.3rem 0.8rem;
+  border-radius: 999px;
+  font-size: 0.85rem;
+  font-weight: 600;
+}
+.project-content {
+  line-height: 1.75;
+  color: var(--ink);
+}
+.project-content :global(h3) {
+  font-size: 1.25rem;
+  margin-top: 2rem;
+  margin-bottom: 0.75rem;
+  color: var(--ink);
+}
+.project-content :global(ul) {
+  padding-left: 1.25rem;
+  margin-bottom: 1.5rem;
+}
+.project-content :global(li) {
+  margin-bottom: 0.5rem;
+}
+</style>

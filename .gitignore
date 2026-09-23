@@ -6,10 +6,22 @@ dist/
 # Dependencies
 node_modules/
 
-# Environment files
+# Python artifacts
+__pycache__/
+*.py[cod]
+*$py.class
+.pytest_cache/
+.venv/
+venv/
+env/
+ENV/
+
+# Environment & Secret files
 .env
 .env.*
 !.env.example
+*.pem
+*.key
 
 # Logs
 npm-debug.log*
@@ -20,11 +32,32 @@ pnpm-debug.log*
 
 # OS & Editor files
 .DS_Store
+.DS_Store?
+._*
 Thumbs.db
+ehthumbs.db
+desktop.ini
 .idea/
 .vscode/*
 !.vscode/extensions.json
 !.vscode/settings.json
+.kilo/
+*.swp
+*.swo
+*~
+
+# Testing & Reports
+test-results/
+playwright-report/
+blob-report/
+coverage/
+.nyc_output/
+
+# Temporary / Scratch artifacts
+*.tmp
+*.temp
+*.bak
+test.pdf
 
 # Route map docs & planning
 docs/route-map/

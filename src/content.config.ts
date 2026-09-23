@@ -15,6 +15,9 @@ const projects = defineCollection({
     ...shared,
     outcome: z.string(),
     featured: z.boolean().default(false),
+    client: z.string().optional(),
+    role: z.string().optional(),
+    logo: z.string().optional(),
     links: z.object({ live: z.string().url().optional(), repo: z.string().url().optional(), demo: z.string().url().optional() }).default({}),
   }),
 });
@@ -28,6 +31,8 @@ const credentials = defineCollection({
     cluster: z.object({ id: z.string(), label: z.string() }).optional(),
     highlight: z.boolean().default(false),
     verifyUrl: z.string().url().optional(),
+    badge: z.string().optional(),
+    pdf: z.string().optional(),
   }),
 });
 

@@ -61,8 +61,8 @@ const LANES: Line[] = ['projects', 'learning', 'notes'];
 const LANE_Y: Record<Line, number> = { projects: 120, learning: 216, notes: 312 };
 const LANE_TITLE: Record<Line, string> = { projects: 'Projects', learning: 'Learning', notes: 'Notes' };
 
-const month = (d: Date | number) =>
-  new Date(d).toLocaleString('en', { month: 'short', year: 'numeric', timeZone: 'UTC' });
+const formatYear = (d: Date | number) =>
+  String(new Date(d).getUTCFullYear());
 const n1 = (v: number) => +v.toFixed(1);
 
 type Item = Omit<Station, 'delay' | 'labelAnchor' | 'labelBelow' | 'y'> & { t: number };
@@ -95,8 +95,8 @@ export function buildRouteMap(entries: MapEntry[], now: Date): Layout {
       title: e.title,
       href: e.href,
       skills: e.skills,
-      when: month(e.date),
-      caption: `${LANE_TITLE[e.line]}: ${e.title}, ${month(e.date)}`,
+      when: formatYear(e.date),
+      caption: `${LANE_TITLE[e.line]}: ${e.title}, ${formatYear(e.date)}`,
       label: e.featured ? (e.title.length > 24 ? e.title.slice(0, 23) + '…' : e.title) : '',
       t: e.date.getTime(),
     });
@@ -116,8 +116,8 @@ export function buildRouteMap(entries: MapEntry[], now: Date): Layout {
       title: label,
       href: `/learning/#${id}`,
       skills: [...new Set(list.flatMap((e) => e.skills))],
-      when: `${list.length} certificates, ${month(Math.min(...times))} to ${month(Math.max(...times))}`,
-      caption: `Learning: ${label}, ${list.length} certificates, ${month(Math.min(...times))} to ${month(Math.max(...times))}`,
+      when: `${list.length} certificates, ${formatYear(Math.min(...times))} to ${formatYear(Math.max(...times))}`,
+      caption: `Learning: ${label}, ${list.length} certificates, ${formatYear(Math.min(...times))} to ${formatYear(Math.max(...times))}`,
       label,
       t: times.reduce((a, b) => a + b, 0) / times.length,
     });
