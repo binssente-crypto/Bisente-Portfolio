@@ -50,8 +50,45 @@ const seminars = credsWithRendered.filter((c) => c.cred.data.kind === 'seminar')
       </div>
     </header>
 
+    <!-- Tab Navigation for Certificates & Seminars -->
+    <div class="learning-tabs-bar" role="tablist" aria-label="Credentials view">
+      <button
+        type="button"
+        role="tab"
+        id="tab-certs"
+        class="learning-tab-btn is-active"
+        aria-selected="true"
+        aria-controls="panel-certs"
+        data-target="panel-certs"
+      >
+        <svg width="17" height="17" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round" aria-hidden="true">
+          <circle cx="12" cy="8" r="6"></circle>
+          <path d="M15.477 12.89 17 22l-5-3-5 3 1.523-9.11"></path>
+        </svg>
+        <span>Certificates &amp; Badges</span>
+        <span class="tab-count">{certs.length}</span>
+      </button>
+
+      <button
+        type="button"
+        role="tab"
+        id="tab-seminars"
+        class="learning-tab-btn"
+        aria-selected="false"
+        aria-controls="panel-seminars"
+        data-target="panel-seminars"
+      >
+        <svg width="17" height="17" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round" aria-hidden="true">
+          <path d="M2 3h6a4 4 0 0 1 4 4v14a3 3 0 0 0-3-3H2z"></path>
+          <path d="M22 3h-6a4 4 0 0 0-4 4v14a3 3 0 0 1 3-3h7z"></path>
+        </svg>
+        <span>Seminars &amp; Workshops</span>
+        <span class="tab-count">{seminars.length}</span>
+      </button>
+    </div>
+
     <!-- SECTION 1: INDUSTRY CERTIFICATIONS & BADGES -->
-    <section class="credentials-group">
+    <section class="credentials-group tab-panel" id="panel-certs" role="tabpanel" aria-labelledby="tab-certs">
       <div class="group-header">
         <div class="group-title-wrap">
           <span class="group-tag">Official Credentials</span>
@@ -123,7 +160,7 @@ const seminars = credsWithRendered.filter((c) => c.cred.data.kind === 'seminar')
     </section>
 
     <!-- SECTION 2: PROFESSIONAL SEMINARS & WORKSHOPS -->
-    <section class="credentials-group seminars-group">
+    <section class="credentials-group seminars-group tab-panel" id="panel-seminars" role="tabpanel" aria-labelledby="tab-seminars" hidden>
       <div class="group-header">
         <div class="group-title-wrap">
           <span class="group-tag seminar-tag">DICT & Technical Seminars</span>
@@ -238,8 +275,83 @@ const seminars = credsWithRendered.filter((c) => c.cred.data.kind === 'seminar')
   text-decoration: none;
   transition: opacity 0.15s ease;
 }
-.credly-btn:hover {
-  opacity: 0.9;
+/* TAB NAVIGATION */
+.learning-tabs-bar {
+  display: inline-flex;
+  align-items: center;
+  background: var(--surface-2);
+  border: 1px solid var(--rail);
+  border-radius: 10px;
+  padding: 4px;
+  gap: 4px;
+  margin-bottom: 2rem;
+  max-width: 100%;
+}
+
+.learning-tab-btn {
+  display: inline-flex;
+  align-items: center;
+  gap: 0.55rem;
+  padding: 0.55rem 1.15rem;
+  border: none;
+  background: transparent;
+  color: var(--ink-2);
+  font-family: inherit;
+  font-size: 0.92rem;
+  font-weight: 600;
+  border-radius: 7px;
+  cursor: pointer;
+  transition: all 0.15s ease;
+  white-space: nowrap;
+}
+
+.learning-tab-btn:hover {
+  color: var(--ink);
+}
+
+.learning-tab-btn.is-active {
+  background: var(--surface);
+  color: var(--ink);
+  font-weight: 700;
+  box-shadow: 0 1px 4px rgba(15, 34, 51, 0.08);
+}
+
+.learning-tab-btn .tab-count {
+  font-size: 0.75rem;
+  font-weight: 700;
+  background: var(--rail);
+  color: var(--ink-2);
+  padding: 0.1rem 0.5rem;
+  border-radius: 999px;
+  transition: all 0.15s ease;
+}
+
+.learning-tab-btn.is-active .tab-count {
+  background: rgba(5, 150, 105, 0.12);
+  color: #059669;
+}
+
+.learning-tab-btn#tab-seminars.is-active .tab-count {
+  background: rgba(2, 132, 199, 0.12);
+  color: #0284C7;
+}
+
+.tab-panel[hidden] {
+  display: none !important;
+}
+
+@media (max-width: 600px) {
+  .learning-tabs-bar {
+    width: 100%;
+    display: flex;
+  }
+  .learning-tab-btn {
+    flex: 1;
+    justify-content: center;
+    padding: 0.5rem 0.65rem;
+    font-size: 0.825rem;
+    gap: 0.4rem;
+  }
 }
 
 /* SECTION GROUPS */
@@ -448,3 +560,73 @@ h2 {
   border-color: var(--ink-2);
 }
 </style>
+
+<script>
+  function initLearningTabs() {
+    const tabs = document.querySelectorAll<HTMLButtonElement>('.learning-tab-btn');
+    const panels = document.querySelectorAll<HTMLElement>('.tab-panel');
+
+    if (!tabs.length) return;
+
+    function switchTab(targetId: string, updateHash = false) {
+      tabs.forEach((tab) => {
+        const isActive = tab.dataset.target === targetId;
+        tab.classList.toggle('is-active', isActive);
+        tab.setAttribute('aria-selected', String(isActive));
+      });
+
+      panels.forEach((panel) => {
+        panel.hidden = panel.id !== targetId;
+      });
+
+      if (updateHash) {
+        history.replaceState(null, '', window.location.pathname);
+      }
+    }
+
+    tabs.forEach((tab) => {
+      tab.addEventListener('click', () => {
+        if (tab.dataset.target) {
+          switchTab(tab.dataset.target, true);
+        }
+      });
+    });
+
+    function checkHash() {
+      const hash = window.location.hash.slice(1);
+      if (!hash) return;
+
+      if (hash === 'panel-seminars' || hash === 'seminars') {
+        switchTab('panel-seminars');
+        return;
+      }
+      if (hash === 'panel-certs' || hash === 'certificates') {
+        switchTab('panel-certs');
+        return;
+      }
+
+      const targetEl = document.getElementById(hash);
+      if (targetEl) {
+        const seminarPanel = document.getElementById('panel-seminars');
+        if (seminarPanel && seminarPanel.contains(targetEl)) {
+          switchTab('panel-seminars');
+        } else {
+          switchTab('panel-certs');
+        }
+        setTimeout(() => {
+          targetEl.scrollIntoView({ behavior: 'smooth', block: 'center' });
+        }, 100);
+      }
+    }
+
+    checkHash();
+    window.addEventListener('hashchange', checkHash);
+  }
+
+  if (document.readyState === 'loading') {
+    document.addEventListener('DOMContentLoaded', initLearningTabs);
+  } else {
+    initLearningTabs();
+  }
+  document.addEventListener('astro:page-load', initLearningTabs);
+</script>
