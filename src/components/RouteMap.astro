@@ -582,14 +582,24 @@ const loop = `M${nowX - 27} 47C${nowX - 25} 32 ${nowX + 27} 30 ${nowX + 31} 49C$
 
   <!-- Alternate List View -->
   <div class="rm-lists" id="panel-list" role="tabpanel" aria-labelledby="tab-list" hidden>
-    {layout.lanes.map((l) => (
-      <section class={`rm-list rm-${l.line}`}>
-        <h3>{l.title}</h3>
-        <ul>
-          {layout.stations
-            .filter((s) => s.line === l.line)
-            .reverse()
-            .map((s) => (
+    {layout.lanes.map((l) => {
+      let laneStations = layout.stations.filter((s) => s.line === l.line).reverse();
+      if (l.line === 'projects') {
+        const order2024: Record<string, number> = {
+          'projects/mafi-receipt': 1,
+          'projects/galaxent-attendance': 2,
+          'projects/bubble-pos': 3,
+        };
+        const p2024 = laneStations.filter((s) => order2024[s.key] !== undefined);
+        p2024.sort((a, b) => order2024[a.key] - order2024[b.key]);
+        const others = laneStations.filter((s) => order2024[s.key] === undefined);
+        laneStations = [...others, ...p2024];
+      }
+      return (
+        <section class={`rm-list rm-${l.line}`}>
+          <h3>{l.title}</h3>
+          <ul>
+            {laneStations.map((s) => (
               <li data-skills={skillsOf(s.skills)} data-key={s.key}>
                 <a href={s.href} data-key={s.key}>
                   <b>{s.title}</b>
@@ -597,9 +607,10 @@ const loop = `M${nowX - 27} 47C${nowX - 25} 32 ${nowX + 27} 30 ${nowX + 31} 49C$
                 </a>
               </li>
             ))}
-        </ul>
-      </section>
-    ))}
+          </ul>
+        </section>
+      );
+    })}
   </div>
 
   <p class="sr-only" role="status" data-rm="status"></p>

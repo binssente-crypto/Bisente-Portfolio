@@ -138,7 +138,7 @@ test('Connectors: Produces correct SVG path types for straight, diagonal, and be
   }
 });
 
-test('Chronological Ordering with Year-Only Dates: Tax Leader < CND Upraze < BizMaker ERP < OMMA and MAFI 3D < Jarvis AI', () => {
+test('Chronological Ordering with Year-Only Dates: Invoicing < Galaxent < Bubble POS, MAFI 3D < Jarvis AI, and TLC < CND < BizMaker < OMMA', () => {
   const y2024 = new Date('2024-01-01T00:00:00Z');
   const y2025 = new Date('2025-01-01T00:00:00Z');
   const y2026 = new Date('2026-01-01T00:00:00Z');
@@ -152,11 +152,21 @@ test('Chronological Ordering with Year-Only Dates: Tax Leader < CND Upraze < Biz
     { key: 'projects/jarvis-ai', line: 'projects', title: 'Jarvis.AI', date: y2025, href: '/p', skills: [], related: [] },
     { key: 'projects/mafi-custom-3d', line: 'projects', title: 'MAFI 3D', date: y2025, href: '/p', skills: [], related: [] },
     { key: 'projects/bubble-pos', line: 'projects', title: 'Bubble POS', date: y2024, href: '/p', skills: [], related: [] },
+    { key: 'projects/galaxent-attendance', line: 'projects', title: 'Galaxent', date: y2024, href: '/p', skills: [], related: [] },
+    { key: 'projects/mafi-receipt', line: 'projects', title: 'MAFI Receipt', date: y2024, href: '/p', skills: [], related: [] },
   ];
 
   const layout = buildRouteMap(entries, now);
   const projectStations = layout.stations.filter((s) => s.line === 'projects');
   const keys = projectStations.map((s) => s.key);
+
+  // Check 2024 order: Invoicing < Galaxent < Bubble POS
+  const mafiReceiptIdx = keys.indexOf('projects/mafi-receipt');
+  const galaxentIdx = keys.indexOf('projects/galaxent-attendance');
+  const bubbleIdx = keys.indexOf('projects/bubble-pos');
+  assert.ok(mafiReceiptIdx !== -1 && galaxentIdx !== -1 && bubbleIdx !== -1);
+  assert.ok(mafiReceiptIdx < galaxentIdx, `Expected MAFI Invoicing (${mafiReceiptIdx}) to precede Galaxent (${galaxentIdx})`);
+  assert.ok(galaxentIdx < bubbleIdx, `Expected Galaxent (${galaxentIdx}) to precede Bubble POS (${bubbleIdx})`);
 
   // Check 2025 order: MAFI 3D before Jarvis.AI
   const mafiIdx = keys.indexOf('projects/mafi-custom-3d');

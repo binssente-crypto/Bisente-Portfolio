@@ -1,5 +1,6 @@
-import fitz
 import os
+
+import fitz
 
 pub_cert_dir = os.path.join(os.getcwd(), 'public', 'certificates')
 pub_badge_dir = os.path.join(os.getcwd(), 'public', 'images', 'credentials')
@@ -10,7 +11,7 @@ for f in os.listdir(pub_cert_dir):
     if not f.endswith('.pdf'):
         continue
     name = f[:-4]
-    if name.startswith('seminar-') or name.startswith('workshop-'):
+    if name.startswith(('seminar-', 'workshop-')):
         continue
 
     doc = fitz.open(os.path.join(pub_cert_dir, f))

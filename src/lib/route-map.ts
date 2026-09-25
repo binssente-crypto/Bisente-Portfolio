@@ -63,10 +63,10 @@ const LANE_TITLE: Record<Line, string> = { projects: 'Projects', learning: 'Lear
 
 // Explicit chronological arrangement when entries share the same year
 const CHRONO_ORDER: Record<string, number> = {
-  // 2024
-  'projects/bubble-pos': 10,
+  // 2024: Invoicing -> Galaxent -> Bubble POS
+  'projects/mafi-receipt': 10,
   'projects/galaxent-attendance': 20,
-  'projects/mafi-receipt': 30,
+  'projects/bubble-pos': 30,
   // 2025: MAFI 3D Custom Clothing came before Jarvis.AI
   'projects/mafi-custom-3d': 100,
   'projects/jarvis-ai': 110,
@@ -81,6 +81,8 @@ const CHRONO_ORDER: Record<string, number> = {
 
 // Waypoint labels for the map canvas (concise transit names)
 const WAYPOINT_LABELS: Record<string, string> = {
+  'projects/mafi-receipt': 'MAFI Invoicing',
+  'projects/galaxent-attendance': 'Galaxent Portal',
   'projects/bubble-pos': 'Bubble POS',
   'projects/mafi-custom-3d': 'MAFI 3D Clothing',
   'projects/tlcph': 'Tax Leaders Circle',

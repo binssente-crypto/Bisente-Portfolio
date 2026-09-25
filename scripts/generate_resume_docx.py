@@ -239,16 +239,16 @@ def create_resume_docx(output_path):
         "Las Piñas City, Philippines",
     )
     add_bullet(
-        "Bubble Hideout POS: ",
-        "Engineered a standalone restaurant point-of-sale and live inventory management system in PHP/MySQL, eliminating dinner-rush order latency and automating daily cash-out reports.",
-    )
-    add_bullet(
         "Michael Anthony's Fashion Inc. (MAFI): ",
         "Automated manual paper invoices and Delivery Receipts (DR) into structured digital records, cutting invoicing errors and administrative overhead.",
     )
     add_bullet(
         "Galaxent Perfume: ",
         "Designed and deployed an attendance logging and payroll calculation portal for retail personnel, reducing manual bi-weekly time reconciliation.",
+    )
+    add_bullet(
+        "Bubble Hideout POS: ",
+        "Engineered a standalone restaurant point-of-sale and live inventory management system in PHP/MySQL, eliminating dinner-rush order latency and automating daily cash-out reports.",
     )
     add_bullet(
         "STI OMMA Platform: ",

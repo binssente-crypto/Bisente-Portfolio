@@ -6,7 +6,7 @@ related: ["projects/bubble-pos", "projects/mafi-custom-3d", "projects/bizmaker-e
 draft: false
 ---
 
-I started taking on freelance client projects back in early 2024. My very first client was Bubble Hideout, a dining spot down in CAA, Las Piñas. They needed a point-of-sale system that could take orders quickly without freezing up during dinner rushes and keep their daily inventory honest. Right after that came a tailoring shop wanting their manual invoices and Delivery Receipts automated so they could stop handwriting paperwork, followed by an attendance portal for a local perfume shop.
+I started taking on freelance client projects back in early 2024. My very first client project was for a local tailoring shop wanting their manual invoices and Delivery Receipts automated so they could stop handwriting paperwork. Right after that came an attendance portal for a local perfume shop, followed by a point-of-sale and inventory system for Bubble Hideout, a dining spot down in CAA, Las Piñas.
 
 When you're building software for real small businesses, theory goes out the window fast. 
 

@@ -37,9 +37,9 @@ Full-Stack Software Engineer and **Magna Cum Laude** Information Systems graduat
 
 ### Freelance Full-Stack Developer | Independent Contractor
 *January 2024 – Present | Las Piñas City, Philippines*
-- **Bubble Hideout POS:** Engineered a standalone restaurant point-of-sale and live inventory management system in PHP/MySQL, eliminating dinner-rush order latency and automating daily cash-out reports.
 - **Michael Anthony's Fashion Inc. (MAFI):** Automated manual paper invoices and Delivery Receipts (DR) into structured digital records, cutting invoicing errors and administrative overhead.
 - **Galaxent Perfume:** Designed and deployed an attendance logging and payroll calculation portal for retail personnel, reducing manual bi-weekly time reconciliation.
+- **Bubble Hideout POS:** Engineered a standalone restaurant point-of-sale and live inventory management system in PHP/MySQL, eliminating dinner-rush order latency and automating daily cash-out reports.
 - **STI OMMA Platform:** Built a production-ready community showcase portal for STI College multimedia artists featuring AWS S3 media uploads, Xendit payment gateways, and real-time chat.
 
 ---

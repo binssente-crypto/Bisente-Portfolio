@@ -296,9 +296,9 @@ def create_resume(output_path):
         "Las Piñas City, Philippines",
     )
     bullets_exp3 = [
-        "<b>Bubble Hideout POS:</b> Engineered a standalone restaurant point-of-sale and live inventory management system in PHP/MySQL, eliminating dinner-rush order latency and automating daily cash-out reports.",
         "<b>Michael Anthony's Fashion Inc. (MAFI):</b> Automated manual paper invoices and Delivery Receipts (DR) into structured digital records, cutting invoicing errors and administrative overhead.",
         "<b>Galaxent Perfume:</b> Designed and deployed an attendance logging and payroll calculation portal for retail personnel, reducing manual bi-weekly time reconciliation.",
+        "<b>Bubble Hideout POS:</b> Engineered a standalone restaurant point-of-sale and live inventory management system in PHP/MySQL, eliminating dinner-rush order latency and automating daily cash-out reports.",
         "<b>STI OMMA Platform:</b> Built a production-ready community showcase portal for STI College multimedia artists featuring AWS S3 media uploads, Xendit payment gateways, and real-time chat.",
     ]
     exp3_flowables = [t3, Spacer(1, 2)]
