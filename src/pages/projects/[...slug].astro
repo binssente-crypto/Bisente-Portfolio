@@ -212,9 +212,9 @@ const year = new Date(project.data.date).getUTCFullYear();
 }
 
 .role-badge {
-  background: rgba(0, 229, 255, 0.12);
-  color: var(--notes);
-  border: 1px solid rgba(0, 229, 255, 0.35);
+  background: color-mix(in srgb, var(--notes) 10%, var(--surface));
+  color: var(--notes-text);
+  border: 1px solid color-mix(in srgb, var(--notes) 30%, transparent);
   padding: 0.2rem 0.6rem;
   border-radius: 4px;
   font-size: 0.85rem;
@@ -246,9 +246,9 @@ h1 {
   display: inline-flex;
   align-items: center;
   gap: 0.5rem;
-  background: rgba(0, 229, 255, 0.15);
-  color: var(--notes);
-  border: 1px solid rgba(0, 229, 255, 0.4);
+  background: color-mix(in srgb, var(--notes) 10%, var(--surface));
+  color: var(--notes-text);
+  border: 1px solid color-mix(in srgb, var(--notes) 35%, transparent);
   padding: 0.55rem 1.15rem;
   border-radius: 999px;
   font-weight: 700;
@@ -258,8 +258,8 @@ h1 {
 }
 
 .btn-live:hover {
-  background: rgba(0, 229, 255, 0.25);
-  box-shadow: 0 0 15px rgba(0, 229, 255, 0.3);
+  background: var(--notes-text);
+  border-color: var(--notes-text);
   color: #FFF;
 }
 
@@ -270,20 +270,21 @@ h1 {
 }
 
 .btn-repo:hover {
-  background: #1F2C46;
-  border-color: var(--notes);
+  background: var(--ink);
+  border-color: var(--ink);
   color: #FFF;
 }
 
 .btn-demo {
   background: var(--projects);
   color: #ffffff;
-  border: 1px solid rgba(255, 107, 0, 0.5);
+  border: 1px solid var(--projects);
 }
 
 .btn-demo:hover {
-  opacity: 0.92;
-  box-shadow: 0 0 15px rgba(255, 107, 0, 0.4);
+  background: var(--projects-text);
+  border-color: var(--projects-text);
+  color: #ffffff;
 }
 
 .skills-wrap {
@@ -395,10 +396,9 @@ h1 {
 }
 
 .project-content :global(.arrow-btn:hover:not(:disabled)) {
-  background: rgba(0, 229, 255, 0.15);
+  background: color-mix(in srgb, var(--notes) 10%, var(--surface));
   border-color: var(--notes);
-  color: var(--notes);
-  box-shadow: 0 0 12px rgba(0, 229, 255, 0.3);
+  color: var(--notes-text);
 }
 
 .project-content :global(.arrow-btn:disabled) {
@@ -424,19 +424,19 @@ h1 {
   scroll-snap-align: start;
   background: var(--surface);
   border: 1px solid var(--rail);
-  border-radius: 10px;
+  border-radius: var(--radius-md);
   overflow: hidden;
   margin: 0;
   padding: 0.65rem;
   display: flex;
   flex-direction: column;
-  box-shadow: 0 4px 16px rgba(0, 0, 0, 0.4);
+  box-shadow: var(--shadow-card);
   transition: transform 0.2s ease, border-color 0.2s ease;
 }
 
 .project-content :global(.carousel-card:hover) {
   transform: translateY(-2px);
-  border-color: rgba(0, 229, 255, 0.4);
+  border-color: var(--border-strong);
 }
 
 .project-content :global(.img-frame) {
@@ -444,7 +444,7 @@ h1 {
   height: 250px; /* Exact uniform height for all images */
   border-radius: 6px;
   overflow: hidden;
-  background: #080C14;
+  background: var(--surface-2);
 }
 
 .project-content :global(.img-frame img) {
