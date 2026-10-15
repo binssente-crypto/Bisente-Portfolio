@@ -62,6 +62,32 @@ test('Same-year projects follow CHRONO_ORDER: Invoicing < Galaxent < Bubble POS,
     assert.ok(j.stops[i].col > j.stops[i - 1].col, `${j.stops[i].key} should sit right of ${j.stops[i - 1].key}`);
 });
 
+test('Same-year learning and notes follow CHRONO_ORDER: seminars first, Junior Cybersecurity Analyst and Blue Team later', () => {
+  const j = buildJourney([
+    cert('junior-cybersecurity-analyst', y2026, { cluster: cisco, highlight: true }),
+    cert('ai-fundamentals-ibm', y2026),
+    cert('networking-basics', y2026, { cluster: cisco }),
+    cert('workshop-packetworx-lorawan', y2026),
+    cert('seminar-dict-r8-cybershield', y2026),
+    cert('seminar-dict-r2-ipr', y2026),
+    note('two-years-of-freelance-systems', y2026),
+    note('junior-cybersecurity-analyst-journey', y2026),
+    note('graduating-magna-cum-laude', y2026),
+    note('seminar-3-takeaways', y2026),
+    note('seminar-2-takeaways', y2026),
+    note('seminar-1-takeaways', y2026),
+  ]);
+  const lane = (line: string) => j.stops.filter((s) => s.line === line).map((s) => `${s.code} ${s.key.split('/')[1]}`);
+  assert.deepEqual(lane('learning'), [
+    'L01 seminar-dict-r2-ipr', 'L02 seminar-dict-r8-cybershield', 'L03 workshop-packetworx-lorawan',
+    'L04 cisco', 'L05 ai-fundamentals-ibm', 'L06 junior-cybersecurity-analyst',
+  ]);
+  assert.deepEqual(lane('notes'), [
+    'N01 seminar-1-takeaways', 'N02 seminar-2-takeaways', 'N03 seminar-3-takeaways',
+    'N04 graduating-magna-cum-laude', 'N05 junior-cybersecurity-analyst-journey', 'N06 two-years-of-freelance-systems',
+  ]);
+});
+
 test('Same-year entries without an explicit order sort by key', () => {
   const j = buildJourney([project('z-item', y2024), project('a-item', y2024), project('m-item', y2024)]);
   assert.deepEqual(j.stops.map((s) => s.key), ['projects/a-item', 'projects/m-item', 'projects/z-item']);

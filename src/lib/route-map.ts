@@ -66,6 +66,20 @@ const CHRONO_ORDER: Record<string, number> = {
   'projects/omma-platform': 230,
   'projects/gamma-pm': 240,
   'projects/egovph-hackathon-2026': 250,
+  // 2026 learning: DICT R2 -> Cyber-Shield -> LoRaWAN -> Cisco -> IBM AI -> Junior Cybersecurity Analyst
+  'credentials/seminar-dict-r2-ipr': 300,
+  'credentials/seminar-dict-r8-cybershield': 310,
+  'credentials/workshop-packetworx-lorawan': 320,
+  'cluster/cisco': 330,
+  'credentials/ai-fundamentals-ibm': 340,
+  'credentials/junior-cybersecurity-analyst': 350,
+  // 2026 notes: seminar takeaways -> Magna Cum Laude -> Blue Team -> two years of freelance
+  'notes/seminar-1-takeaways': 400,
+  'notes/seminar-2-takeaways': 410,
+  'notes/seminar-3-takeaways': 420,
+  'notes/graduating-magna-cum-laude': 430,
+  'notes/junior-cybersecurity-analyst-journey': 440,
+  'notes/two-years-of-freelance-systems': 450,
 };
 
 // Short labels for the map (concise transit names). Full titles show in the popover.

@@ -1144,6 +1144,7 @@ const skillCategories = [
 .kanban-grid {
   display: grid;
   grid-template-columns: repeat(7, minmax(0, 1fr));
+  align-items: start; /* each column only as tall as its skills, no empty card bottoms */
   gap: 0.65rem;
 }
 
@@ -1175,13 +1176,14 @@ const skillCategories = [
 }
 
 .kanban-column {
+  min-width: 0;
   background: var(--surface);
-  border: 1px solid var(--rail);
-  border-radius: 12px;
+  border: 1px solid var(--border);
+  border-radius: var(--radius-md);
   padding: 0.75rem 0.65rem;
   display: flex;
   flex-direction: column;
-  box-shadow: 0 1px 3px rgba(0, 0, 0, 0.03);
+  box-shadow: var(--shadow-card);
 }
 
 .kanban-column-header {
@@ -1204,11 +1206,12 @@ const skillCategories = [
 }
 
 .column-name {
+  flex: 1;
+  min-width: 0;
   font-size: 0.76rem;
   font-weight: 700;
+  line-height: 1.2;
   color: var(--ink);
-  flex: 1;
-  white-space: nowrap;
   letter-spacing: -0.01em;
 }
 
@@ -1217,7 +1220,8 @@ const skillCategories = [
   font-weight: 700;
   background: var(--surface-2);
   color: var(--ink-2);
-  padding: 0.1rem 0.45rem;
+  padding: 0.05rem 0.4rem;
+  border: 1px solid var(--border);
   border-radius: 999px;
   flex-shrink: 0;
 }
@@ -1231,6 +1235,8 @@ const skillCategories = [
 .skill-pill-btn {
   display: inline-flex;
   align-items: center;
+  min-width: 0;
+  overflow-wrap: anywhere;
   gap: 0.45rem;
   padding: 0.38rem 0.65rem;
   border: 1px solid var(--rail);
