@@ -181,9 +181,21 @@ const stats = [
       </div>
     </section>
 
-    <!-- Education + At a glance | Experience -->
+    <!-- At a glance + Education | Experience -->
     <div class="info-grid">
       <div class="info-stack">
+      <section class="info-card glance-card" aria-labelledby="glance-heading">
+        <h2 id="glance-heading" class="section-title">At a glance</h2>
+        <dl class="glance-grid">
+          {stats.map((s) => (
+            <div class="glance-stat" style={`--accent: ${s.accent}`}>
+              <dt>{s.label}</dt>
+              <dd>{s.value}</dd>
+            </div>
+          ))}
+        </dl>
+      </section>
+
       <section class="info-card" aria-labelledby="education-heading">
         <h2 id="education-heading" class="section-title">Education</h2>
         <ul class="info-list">
@@ -202,18 +214,6 @@ const stats = [
             <p class="info-note">Junior High School (2016–2020) • Senior High School TVL-ICT (2020–2022)</p>
           </li>
         </ul>
-      </section>
-
-      <section class="info-card glance-card" aria-labelledby="glance-heading">
-        <h2 id="glance-heading" class="section-title">At a glance</h2>
-        <dl class="glance-grid">
-          {stats.map((s) => (
-            <div class="glance-stat" style={`--accent: ${s.accent}`}>
-              <dt>{s.label}</dt>
-              <dd>{s.value}</dd>
-            </div>
-          ))}
-        </dl>
       </section>
       </div>
 
