@@ -30,11 +30,6 @@ const year = new Date(note.data.date).getUTCFullYear();
     <header class="note-header">
       <span class="year-badge">{year}</span>
       <h1>{note.data.title}</h1>
-      <div class="skills-wrap" aria-label="Related skills">
-        {note.data.skills.map((skill) => (
-          <span class="skill-tag">{skill}</span>
-        ))}
-      </div>
     </header>
 
     <div class="note-content">
@@ -79,20 +74,6 @@ const year = new Date(note.data.date).getUTCFullYear();
 }
 h1 {
   margin: 0.75rem 0 1rem;
-}
-.skills-wrap {
-  display: flex;
-  flex-wrap: wrap;
-  gap: 0.5rem;
-}
-.skill-tag {
-  background: var(--surface);
-  border: 1px solid var(--rail);
-  color: var(--ink);
-  padding: 0.25rem 0.75rem;
-  border-radius: 999px;
-  font-size: 0.85rem;
-  font-weight: 600;
 }
 .note-content {
   line-height: 1.75;

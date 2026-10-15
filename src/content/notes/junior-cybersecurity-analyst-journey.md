@@ -1,7 +1,7 @@
 ---
 title: "Behind the Blue Team: What Grinding the Cisco Junior Cybersecurity Analyst Credential Actually Taught Me"
 date: "2026"
-skills: ["Cybersecurity", "Incident Response", "Network Defense", "SOC Operations", "Threat Intelligence"]
+skills: []
 related: ["credentials/junior-cybersecurity-analyst"]
 draft: false
 ---

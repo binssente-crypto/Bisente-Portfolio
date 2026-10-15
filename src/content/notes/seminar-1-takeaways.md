@@ -1,7 +1,7 @@
 ---
 title: "Protecting Freelance Code: Takeaways from DICT Region 2"
 date: "2026"
-skills: ["Intellectual Property", "Freelancing", "Contracts"]
+skills: []
 related: ["credentials/seminar-dict-r2-ipr"]
 draft: false
 ---

@@ -1,7 +1,7 @@
 ---
 title: "Graduating Magna Cum Laude: Shipping Real Systems While Keeping Grades Up"
 date: "2026"
-skills: ["JavaScript", "TypeScript", "Python", "PHP", "SQL"]
+skills: []
 related: []
 draft: false
 ---

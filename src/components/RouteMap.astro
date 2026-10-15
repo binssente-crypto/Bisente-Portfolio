@@ -71,9 +71,9 @@ const skillCategories = [
       { name: 'Python', slug: 'python', icon: 'python', common: true },
       { name: 'PHP', slug: 'php', icon: 'php', common: true },
       { name: 'SQL', slug: 'sql', icon: 'db', common: true },
+      { name: 'Bash', slug: 'bash', icon: 'terminal', common: false },
       { name: 'HTML5', slug: 'html5', icon: 'html', common: false },
       { name: 'CSS3', slug: 'css3', icon: 'css', common: false },
-      { name: 'Bash', slug: 'bash', icon: 'terminal', common: false },
     ],
   },
   {
@@ -84,9 +84,12 @@ const skillCategories = [
       { name: 'Next.js', slug: 'next-js', icon: 'next', common: true },
       { name: 'Vue.js', slug: 'vue-js', icon: 'vue', common: true },
       { name: 'TailwindCSS', slug: 'tailwindcss', icon: 'tailwind', common: true },
+      { name: 'React Native', slug: 'react-native', icon: 'react-native', common: true },
+      { name: 'Three.js', slug: 'three-js', icon: 'three', common: false },
       { name: 'Pinia', slug: 'pinia', icon: 'pinia', common: false },
       { name: 'Bootstrap', slug: 'bootstrap', icon: 'bootstrap', common: false },
       { name: 'SVG / Canvas', slug: 'svg', icon: 'vector', common: false },
+      { name: 'Mermaid Chart', slug: 'mermaid', icon: 'mermaid', common: true },
     ],
   },
   {
@@ -96,11 +99,49 @@ const skillCategories = [
       { name: 'Node.js', slug: 'node-js', icon: 'node', common: true },
       { name: 'Express', slug: 'express', icon: 'server', common: true },
       { name: 'REST APIs', slug: 'apis', icon: 'api', common: true },
-      { name: 'Docker', slug: 'docker', icon: 'docker', common: true },
-      { name: 'Laravel', slug: 'laravel', icon: 'laravel', common: false },
-      { name: 'Django', slug: 'django', icon: 'django', common: false },
+      { name: 'Laravel', slug: 'laravel', icon: 'laravel', common: true },
+      { name: 'Django', slug: 'django', icon: 'django', common: true },
       { name: 'FastAPI', slug: 'fastapi', icon: 'fastapi', common: false },
       { name: 'WebSockets', slug: 'websockets', icon: 'socket', common: false },
+    ],
+  },
+  {
+    name: 'Testing & QA',
+    color: '#EC4899',
+    skills: [
+      { name: 'Playwright', slug: 'playwright', icon: 'playwright', common: true },
+      { name: 'Vitest', slug: 'vitest', icon: 'vitest', common: true },
+      { name: 'Pest', slug: 'pest', icon: 'pest', common: true },
+      { name: 'Pytest', slug: 'pytest', icon: 'pytest', common: true },
+      { name: 'Postman', slug: 'postman', icon: 'postman', common: true },
+      { name: 'Newman', slug: 'newman', icon: 'postman', common: true },
+      { name: 'PHPUnit', slug: 'phpunit', icon: 'phpunit', common: false },
+      { name: 'Supertest', slug: 'supertest', icon: 'supertest', common: false },
+    ],
+  },
+  {
+    name: 'CI/CD & DevOps',
+    color: '#38BDF8',
+    skills: [
+      { name: 'GitHub Actions', slug: 'github-actions', icon: 'actions', common: true },
+      { name: 'Docker', slug: 'docker', icon: 'docker', common: true },
+      { name: 'Supabase CLI', slug: 'supabase-cli', icon: 'supabase', common: true },
+      { name: 'Cloudflare', slug: 'cloudflare', icon: 'cloud', common: false },
+      { name: 'Vercel & Render', slug: 'vercel', icon: 'cloud', common: false },
+      { name: 'SSH Deploy', slug: 'ssh-deploy', icon: 'terminal', common: false },
+    ],
+  },
+  {
+    name: 'Databases & Cloud',
+    color: '#F59E0B',
+    skills: [
+      { name: 'PostgreSQL', slug: 'postgresql', icon: 'postgres', common: true },
+      { name: 'Supabase', slug: 'supabase', icon: 'supabase', common: true },
+      { name: 'MySQL', slug: 'mysql', icon: 'mysql', common: true },
+      { name: 'Redis', slug: 'redis', icon: 'redis', common: true },
+      { name: 'Supabase Storage', slug: 'supabase-storage', icon: 'supabase', common: false },
+      { name: 'Prisma ORM', slug: 'prisma', icon: 'prisma', common: false },
+      { name: 'SQLite', slug: 'sqlite', icon: 'db', common: false },
     ],
   },
   {
@@ -108,26 +149,14 @@ const skillCategories = [
     color: '#00FF9D',
     skills: [
       { name: 'Cybersecurity', slug: 'cybersecurity', icon: 'shield', common: true },
+      { name: 'CodeRabbit', slug: 'coderabbit', icon: 'rabbit', common: true },
+      { name: 'CodeQL SAST', slug: 'codeql', icon: 'codeql', common: true },
+      { name: 'Gitleaks', slug: 'gitleaks', icon: 'gitleaks', common: true },
       { name: 'SOC Operations', slug: 'soc-operations', icon: 'radar', common: true },
-      { name: 'Incident Response', slug: 'incident-response', icon: 'alert', common: true },
-      { name: 'Network Defense', slug: 'network-defense', icon: 'firewall', common: true },
-      { name: 'Threat Intel', slug: 'threat-intelligence', icon: 'intel', common: false },
-      { name: 'Packet Analysis', slug: 'packet-analysis', icon: 'packet', common: false },
+      { name: 'Incident Response', slug: 'incident-response', icon: 'alert', common: false },
+      { name: 'Network Defense', slug: 'network-defense', icon: 'firewall', common: false },
       { name: 'Cisco IOS', slug: 'cisco-ios', icon: 'cisco', common: false },
-      { name: 'Linux Security', slug: 'linux-security', icon: 'linux', common: false },
-    ],
-  },
-  {
-    name: 'Databases & Cloud',
-    color: '#38BDF8',
-    skills: [
-      { name: 'PostgreSQL', slug: 'postgresql', icon: 'postgres', common: true },
-      { name: 'MySQL', slug: 'mysql', icon: 'mysql', common: true },
-      { name: 'SQLite', slug: 'sqlite', icon: 'db', common: true },
-      { name: 'Redis', slug: 'redis', icon: 'redis', common: true },
-      { name: 'Prisma ORM', slug: 'prisma', icon: 'prisma', common: false },
-      { name: 'Supabase', slug: 'supabase', icon: 'supabase', common: false },
-      { name: 'Cloudflare', slug: 'cloudflare', icon: 'cloud', common: false },
+      { name: 'Threat Intel', slug: 'threat-intelligence', icon: 'intel', common: false },
     ],
   },
 ];
@@ -386,8 +415,111 @@ const loop = `M${nowX - 27} 47C${nowX - 25} 32 ${nowX + 27} 30 ${nowX + 31} 49C$
                     <path d="M18.8 11.2c-.4-3-3-5.2-6-5.2-2.3 0-4.3 1.3-5.3 3.3C4.2 9.6 1.5 12.2 1.5 15.5c0 3.6 2.9 6.5 6.5 6.5h10.8c2.9 0 5.2-2.3 5.2-5.2 0-2.7-2-4.9-4.7-5.2l-.5-.4z"/>
                   </svg>
                 )}
+                {sk.icon === 'playwright' && (
+                  <svg width="13" height="13" viewBox="0 0 24 24" fill="none" class="pill-icon">
+                    <circle cx="8.5" cy="12" r="5.5" fill="#45BA4B" fill-opacity="0.85"/>
+                    <circle cx="15.5" cy="12" r="5.5" fill="#D03D3D" fill-opacity="0.85"/>
+                  </svg>
+                )}
+                {sk.icon === 'vitest' && (
+                  <svg width="13" height="13" viewBox="0 0 24 24" fill="currentColor" class="pill-icon">
+                    <path d="M12 2.5L2 20h20L12 2.5zm0 4.2L18.4 18H5.6L12 6.7z" fill="#FCC72B"/>
+                    <polygon points="12 9 8 16 16 16" fill="#729B1B"/>
+                  </svg>
+                )}
+                {sk.icon === 'pest' && (
+                  <svg width="13" height="13" viewBox="0 0 24 24" fill="none" stroke="#FF4088" stroke-width="2" stroke-linecap="round" stroke-linejoin="round" class="pill-icon">
+                    <path d="M12 2a4 4 0 0 0-4 4v2h8V6a4 4 0 0 0-4-4z"/>
+                    <path d="M6 13a6 6 0 0 0 12 0v-5H6v5z"/>
+                    <line x1="2" y1="9" x2="6" y2="10"/>
+                    <line x1="2" y1="14" x2="6" y2="14"/>
+                    <line x1="18" y1="10" x2="22" y2="9"/>
+                    <line x1="18" y1="14" x2="22" y2="14"/>
+                  </svg>
+                )}
+                {sk.icon === 'pytest' && (
+                  <svg width="13" height="13" viewBox="0 0 24 24" fill="none" class="pill-icon">
+                    <path d="M10 2v5.5L4.5 18c-.8 1.4.2 3 1.8 3h11.4c1.6 0 2.6-1.6 1.8-3L14 7.5V2h-4z" stroke="#0096D6" stroke-width="2"/>
+                    <path d="M8.5 13h7l1.5 3H7l1.5-3z" fill="#4B9CD3"/>
+                  </svg>
+                )}
+                {sk.icon === 'postman' && (
+                  <svg width="13" height="13" viewBox="0 0 24 24" fill="currentColor" class="pill-icon">
+                    <circle cx="12" cy="12" r="10" fill="#FF6C37"/>
+                    <path d="M7 12l3.5 3.5 6.5-6.5" stroke="#FFF" stroke-width="2" fill="none" stroke-linecap="round" stroke-linejoin="round"/>
+                  </svg>
+                )}
+                {sk.icon === 'phpunit' && (
+                  <svg width="13" height="13" viewBox="0 0 24 24" fill="none" class="pill-icon">
+                    <rect width="24" height="24" rx="4" fill="#3D596D"/>
+                    <path d="M6 8h4a3 3 0 0 1 0 6H6V8zm7 4l4 4m0-4l-4 4" stroke="#48B9EB" stroke-width="2" stroke-linecap="round"/>
+                  </svg>
+                )}
+                {sk.icon === 'supertest' && (
+                  <svg width="13" height="13" viewBox="0 0 24 24" fill="none" stroke="#10B981" stroke-width="2" stroke-linecap="round" stroke-linejoin="round" class="pill-icon">
+                    <path d="M22 11.08V12a10 10 0 1 1-5.93-9.14"/>
+                    <polyline points="22 4 12 14.01 9 11.01"/>
+                  </svg>
+                )}
+                {sk.icon === 'actions' && (
+                  <svg width="13" height="13" viewBox="0 0 24 24" fill="none" stroke="#2088FF" stroke-width="2.2" stroke-linecap="round" stroke-linejoin="round" class="pill-icon">
+                    <circle cx="6" cy="6" r="3"/>
+                    <circle cx="6" cy="18" r="3"/>
+                    <circle cx="18" cy="12" r="3"/>
+                    <path d="M9 6h3a3 3 0 0 1 3 3v0"/>
+                    <path d="M9 18h3a3 3 0 0 0 3-3v0"/>
+                  </svg>
+                )}
+                {sk.icon === 'react-native' && (
+                  <svg width="13" height="13" viewBox="0 0 24 24" fill="none" class="pill-icon">
+                    <rect x="5" y="2" width="14" height="20" rx="3" stroke="#61DAFB" stroke-width="2"/>
+                    <circle cx="12" cy="18" r="1" fill="#61DAFB"/>
+                    <path d="M9 8h6M9 11h3" stroke="#61DAFB" stroke-width="1.5" stroke-linecap="round"/>
+                  </svg>
+                )}
+                {sk.icon === 'three' && (
+                  <svg width="13" height="13" viewBox="0 0 24 24" fill="none" stroke="#000" stroke-width="2" stroke-linejoin="round" class="pill-icon">
+                    <polygon points="12 2 2 7 12 12 22 7 12 2" fill="#CBD5E1"/>
+                    <polyline points="2 17 12 22 22 17"/>
+                    <polyline points="2 12 12 17 22 12"/>
+                  </svg>
+                )}
+                {sk.icon === 'codeql' && (
+                  <svg width="13" height="13" viewBox="0 0 24 24" fill="none" stroke="#9333EA" stroke-width="2" class="pill-icon">
+                    <circle cx="12" cy="12" r="9"/>
+                    <path d="M9 12l2 2 4-4" stroke-linecap="round"/>
+                  </svg>
+                )}
+                {sk.icon === 'gitleaks' && (
+                  <svg width="13" height="13" viewBox="0 0 24 24" fill="none" stroke="#EF4444" stroke-width="2" stroke-linecap="round" stroke-linejoin="round" class="pill-icon">
+                    <circle cx="8" cy="15" r="4"/>
+                    <path d="M10.85 12.15L19 4"/>
+                    <path d="M18 5l2 2"/>
+                    <path d="M15 8l2 2"/>
+                  </svg>
+                )}
+                {sk.icon === 'rabbit' && (
+                  <svg width="13" height="13" viewBox="0 0 24 24" fill="none" stroke="#FF6B4A" stroke-width="2" stroke-linecap="round" stroke-linejoin="round" class="pill-icon">
+                    <path d="M12 13c-2.5 0-4.5 1.5-4.5 4s2 4 4.5 4 4.5-1.5 4.5-4-2-4-4.5-4z"/>
+                    <path d="M9.5 13L8 3.5a1.5 1.5 0 0 1 3 0L11.5 13"/>
+                    <path d="M14.5 13L16 3.5a1.5 1.5 0 0 0-3 0L12.5 13"/>
+                    <circle cx="10" cy="16.5" r="0.75" fill="#FF6B4A"/>
+                    <circle cx="14" cy="16.5" r="0.75" fill="#FF6B4A"/>
+                  </svg>
+                )}
+                {sk.icon === 'mermaid' && (
+                  <svg width="13" height="13" viewBox="0 0 24 24" fill="none" stroke="#FF3670" stroke-width="2" stroke-linecap="round" stroke-linejoin="round" class="pill-icon">
+                    <rect x="3" y="3" width="7" height="7" rx="1.5"/>
+                    <rect x="14" y="3" width="7" height="7" rx="1.5"/>
+                    <rect x="8.5" y="14" width="7" height="7" rx="1.5"/>
+                    <line x1="6.5" y1="10" x2="6.5" y2="12"/>
+                    <line x1="17.5" y1="10" x2="17.5" y2="12"/>
+                    <line x1="6.5" y1="12" x2="17.5" y2="12"/>
+                    <line x1="12" y1="12" x2="12" y2="14"/>
+                  </svg>
+                )}
                 {/* Fallback default tech icon if not matched above */}
-                {!['js','ts','python','php','html','css','terminal','react','next','vue','pinia','tailwind','bootstrap','vector','node','server','laravel','django','fastapi','api','socket','docker','shield','radar','alert','firewall','intel','packet','cisco','linux','db','postgres','mysql','redis','prisma','supabase','cloud'].includes(sk.icon) && (
+                {!['js','ts','python','php','html','css','terminal','react','next','vue','pinia','tailwind','bootstrap','vector','node','server','laravel','django','fastapi','api','socket','docker','shield','radar','alert','firewall','intel','packet','cisco','linux','db','postgres','mysql','redis','prisma','supabase','cloud','playwright','vitest','pest','pytest','postman','phpunit','supertest','actions','react-native','three','codeql','gitleaks','rabbit','mermaid'].includes(sk.icon) && (
                   <svg width="12" height="12" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" class="pill-icon">
                     <polyline points="16 18 22 12 16 6"></polyline><polyline points="8 6 2 12 8 18"></polyline>
                   </svg>
@@ -901,19 +1033,28 @@ const loop = `M${nowX - 27} 47C${nowX - 25} 32 ${nowX + 27} 30 ${nowX + 31} 49C$
 
 .kanban-grid {
   display: grid;
-  grid-template-columns: repeat(5, minmax(0, 1fr));
-  gap: 1rem;
+  grid-template-columns: repeat(7, minmax(0, 1fr));
+  gap: 0.65rem;
 }
 
-@media (max-width: 960px) {
+@media (max-width: 1060px) {
   .kanban-grid {
-    grid-template-columns: repeat(3, minmax(0, 1fr));
+    grid-template-columns: repeat(4, minmax(0, 1fr));
+    gap: 0.75rem;
   }
 }
 
-@media (max-width: 640px) {
+@media (max-width: 760px) {
+  .kanban-grid {
+    grid-template-columns: repeat(2, minmax(0, 1fr));
+    gap: 0.75rem;
+  }
+}
+
+@media (max-width: 480px) {
   .kanban-grid {
     grid-template-columns: 1fr;
+    gap: 0.75rem;
   }
 }
 
@@ -925,7 +1066,7 @@ const loop = `M${nowX - 27} 47C${nowX - 25} 32 ${nowX + 27} 30 ${nowX + 31} 49C$
   background: var(--surface);
   border: 1px solid var(--rail);
   border-radius: 12px;
-  padding: 0.85rem;
+  padding: 0.75rem 0.65rem;
   display: flex;
   flex-direction: column;
   box-shadow: 0 1px 3px rgba(0, 0, 0, 0.03);
@@ -934,11 +1075,11 @@ const loop = `M${nowX - 27} 47C${nowX - 25} 32 ${nowX + 27} 30 ${nowX + 31} 49C$
 .kanban-column-header {
   display: flex;
   align-items: center;
-  gap: 0.45rem;
-  padding-bottom: 0.65rem;
-  margin-bottom: 0.75rem;
+  gap: 0.35rem;
+  padding-bottom: 0.55rem;
+  margin-bottom: 0.65rem;
   border-bottom: 2px solid var(--col-accent);
-  min-height: 38px;
+  min-height: 36px;
 }
 
 .column-dot {
@@ -951,7 +1092,7 @@ const loop = `M${nowX - 27} 47C${nowX - 25} 32 ${nowX + 27} 30 ${nowX + 31} 49C$
 }
 
 .column-name {
-  font-size: 0.8rem;
+  font-size: 0.76rem;
   font-weight: 700;
   color: var(--ink);
   flex: 1;

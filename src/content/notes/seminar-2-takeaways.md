@@ -1,7 +1,7 @@
 ---
 title: "Cyber-Shield Tuesday: Everyday Defenses from DICT Region 8"
 date: "2026"
-skills: ["Cybersecurity", "Incident Response", "Authentication"]
+skills: []
 related: ["credentials/seminar-dict-r8-cybershield"]
 draft: false
 ---

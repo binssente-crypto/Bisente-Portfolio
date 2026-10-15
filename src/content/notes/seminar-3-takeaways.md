@@ -1,7 +1,7 @@
 ---
 title: "Building Outside the Browser: IoT & LoRaWAN with Packetworx"
 date: "2026"
-skills: ["IoT", "LoRaWAN", "Hardware Protocols"]
+skills: []
 related: ["credentials/workshop-packetworx-lorawan"]
 draft: false
 ---

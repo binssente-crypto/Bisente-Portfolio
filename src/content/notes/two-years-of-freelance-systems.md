@@ -1,7 +1,7 @@
 ---
 title: "What two years of freelance systems taught me"
 date: "2026"
-skills: ["Architecture", "Freelancing", "MySQL", "PHP", "React"]
+skills: []
 related: ["projects/bubble-pos", "projects/mafi-custom-3d", "projects/bizmaker-erp"]
 draft: false
 ---
