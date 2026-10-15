@@ -1,6 +1,20 @@
 ---
 import Base from '../layouts/Base.astro';
+import { getCollection } from 'astro:content';
 import RouteMap from '../components/RouteMap.astro';
+
+// "At a glance" numbers come straight from the content collections, so they stay current
+const [projects, credentials, notes] = await Promise.all([
+  getCollection('projects'),
+  getCollection('credentials'),
+  getCollection('notes', ({ data }) => !data.draft),
+]);
+const stats = [
+  { value: projects.length, label: 'Projects shipped', accent: 'var(--projects-text)' },
+  { value: credentials.length, label: 'Credentials', accent: 'var(--learning-text)' },
+  { value: notes.length, label: 'Notes written', accent: 'var(--notes-text)' },
+  { value: Math.min(...projects.map((p) => p.data.date.getUTCFullYear())), label: 'Building since', accent: 'var(--accent-gold)' },
+];
 ---
 
 <Base title="Mark Reizel Vincent C. Palma | Full-Stack Engineer & Software Developer">
@@ -167,8 +181,9 @@ import RouteMap from '../components/RouteMap.astro';
       </div>
     </section>
 
-    <!-- Education | Experience: two equal cards with divided rows -->
+    <!-- Education + At a glance | Experience -->
     <div class="info-grid">
+      <div class="info-stack">
       <section class="info-card" aria-labelledby="education-heading">
         <h2 id="education-heading" class="section-title">Education</h2>
         <ul class="info-list">
@@ -188,6 +203,19 @@ import RouteMap from '../components/RouteMap.astro';
           </li>
         </ul>
       </section>
+
+      <section class="info-card glance-card" aria-labelledby="glance-heading">
+        <h2 id="glance-heading" class="section-title">At a glance</h2>
+        <dl class="glance-grid">
+          {stats.map((s) => (
+            <div class="glance-stat" style={`--accent: ${s.accent}`}>
+              <dt>{s.label}</dt>
+              <dd>{s.value}</dd>
+            </div>
+          ))}
+        </dl>
+      </section>
+      </div>
 
       <section class="info-card" aria-labelledby="experience-heading">
         <h2 id="experience-heading" class="section-title">Experience</h2>
@@ -545,7 +573,6 @@ import RouteMap from '../components/RouteMap.astro';
 .info-grid {
   display: grid;
   grid-template-columns: repeat(2, minmax(0, 1fr));
-  align-items: start; /* cards hug their rows instead of stretching into empty space */
   gap: var(--space-4);
   margin-bottom: var(--space-7);
 }
@@ -554,6 +581,12 @@ import RouteMap from '../components/RouteMap.astro';
   .info-grid {
     grid-template-columns: 1fr;
   }
+}
+
+.info-stack {
+  display: flex;
+  flex-direction: column;
+  gap: var(--space-4);
 }
 
 .info-card {
@@ -619,5 +652,53 @@ import RouteMap from '../components/RouteMap.astro';
   color: var(--ink-2);
   font-size: 0.85rem;
   line-height: 1.45;
+}
+
+/* ---- At a glance ---- */
+.glance-card {
+  flex: 1; /* fills the left column down to the bottom of Experience */
+  display: flex;
+  flex-direction: column;
+}
+
+.glance-grid {
+  flex: 1;
+  display: grid;
+  grid-template-columns: repeat(4, minmax(0, 1fr));
+  gap: var(--space-3);
+  margin: var(--space-2) 0 0;
+}
+
+@media (max-width: 520px) {
+  .glance-grid {
+    grid-template-columns: repeat(2, minmax(0, 1fr));
+  }
+}
+
+.glance-stat {
+  display: flex;
+  flex-direction: column-reverse; /* number on top, label under it; dt stays first for screen readers */
+  justify-content: center;
+  padding: var(--space-3);
+  border-radius: var(--radius-md);
+  background: color-mix(in srgb, var(--accent) 7%, var(--surface));
+  border-top: 3px solid var(--accent);
+}
+
+.glance-stat dd {
+  margin: 0;
+  color: var(--accent);
+  font-size: 1.6rem;
+  font-weight: 800;
+  line-height: 1.1;
+  letter-spacing: -0.02em;
+}
+
+.glance-stat dt {
+  margin-top: 0.15rem;
+  color: var(--ink-2);
+  font-size: 0.78rem;
+  font-weight: 600;
+  line-height: 1.25;
 }
 </style>
