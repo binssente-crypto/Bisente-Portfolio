@@ -110,7 +110,7 @@ const skillCategories = [
       { name: 'Pest', slug: 'pest', icon: 'pest', common: true },
       { name: 'Pytest', slug: 'pytest', icon: 'pytest', common: true },
       { name: 'Postman', slug: 'postman', icon: 'postman', common: true },
-      { name: 'Newman', slug: 'newman', icon: 'postman', common: true },
+      { name: 'Newman', slug: 'newman', icon: 'newman', common: true },
       { name: 'PHPUnit', slug: 'phpunit', icon: 'phpunit', common: false },
       { name: 'Supertest', slug: 'supertest', icon: 'supertest', common: false },
     ],
@@ -438,9 +438,18 @@ const skillCategories = [
                   </svg>
                 )}
                 {sk.icon === 'postman' && (
-                  <svg width="13" height="13" viewBox="0 0 24 24" fill="currentColor" class="pill-icon">
-                    <circle cx="12" cy="12" r="10" fill="#FF6C37"/>
-                    <path d="M7 12l3.5 3.5 6.5-6.5" stroke="#FFF" stroke-width="2" fill="none" stroke-linecap="round" stroke-linejoin="round"/>
+                  <svg width="13" height="13" viewBox="0 0 24 24" fill="none" class="pill-icon">
+                    <circle cx="12" cy="12" r="11" fill="#FF6C37"/>
+                    <path d="M17.2 6.8c-2.7.2-5 1.9-6.2 4.3l-1.9.5-1.5 1.7 2.3.4 2.4 2.4.4 2.3 1.7-1.5.5-1.9c2.4-1.2 4.1-3.5 4.3-6.2z" fill="#FFF"/>
+                    <circle cx="14.4" cy="9.6" r="1.1" fill="#FF6C37"/>
+                    <path d="M8.4 15.6l-1.6 1.6" stroke="#FFF" stroke-width="1.6" stroke-linecap="round"/>
+                  </svg>
+                )}
+                {sk.icon === 'newman' && (
+                  <svg width="13" height="13" viewBox="0 0 24 24" fill="none" class="pill-icon">
+                    <rect x="1.5" y="3" width="21" height="18" rx="3.5" fill="#FF6C37"/>
+                    <path d="M6.5 9l3.5 3-3.5 3" stroke="#FFF" stroke-width="2" stroke-linecap="round" stroke-linejoin="round"/>
+                    <path d="M12 15.5h5.5" stroke="#FFF" stroke-width="2" stroke-linecap="round"/>
                   </svg>
                 )}
                 {sk.icon === 'phpunit' && (
@@ -450,9 +459,9 @@ const skillCategories = [
                   </svg>
                 )}
                 {sk.icon === 'supertest' && (
-                  <svg width="13" height="13" viewBox="0 0 24 24" fill="none" stroke="#10B981" stroke-width="2" stroke-linecap="round" stroke-linejoin="round" class="pill-icon">
-                    <path d="M22 11.08V12a10 10 0 1 1-5.93-9.14"/>
-                    <polyline points="22 4 12 14.01 9 11.01"/>
+                  <svg width="13" height="13" viewBox="0 0 24 24" fill="none" class="pill-icon">
+                    <rect width="24" height="24" rx="4" fill="#10B981"/>
+                    <path d="M5.5 9h11m-3-3l3 3-3 3M18.5 15h-11m3-3l-3 3 3 3" stroke="#FFF" stroke-width="2" stroke-linecap="round" stroke-linejoin="round"/>
                   </svg>
                 )}
                 {sk.icon === 'actions' && (
@@ -513,7 +522,7 @@ const skillCategories = [
                   </svg>
                 )}
                 {/* Fallback default tech icon if not matched above */}
-                {!['js','ts','python','php','html','css','terminal','react','next','vue','pinia','tailwind','bootstrap','vector','node','server','laravel','django','fastapi','api','socket','docker','shield','radar','alert','firewall','intel','packet','cisco','linux','db','postgres','mysql','redis','prisma','supabase','cloud','playwright','vitest','pest','pytest','postman','phpunit','supertest','actions','react-native','three','codeql','gitleaks','rabbit','mermaid'].includes(sk.icon) && (
+                {!['js','ts','python','php','html','css','terminal','react','next','vue','pinia','tailwind','bootstrap','vector','node','server','laravel','django','fastapi','api','socket','docker','shield','radar','alert','firewall','intel','packet','cisco','linux','db','postgres','mysql','redis','prisma','supabase','cloud','playwright','vitest','pest','pytest','postman','newman','phpunit','supertest','actions','react-native','three','codeql','gitleaks','rabbit','mermaid'].includes(sk.icon) && (
                   <svg width="12" height="12" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" class="pill-icon">
                     <polyline points="16 18 22 12 16 6"></polyline><polyline points="8 6 2 12 8 18"></polyline>
                   </svg>
