@@ -1,6 +1,7 @@
 ---
 import '@fontsource-variable/atkinson-hyperlegible-next/wght.css';
 import '../styles/global.css';
+import PetalLayer from '../components/PetalLayer.astro';
 const { title } = Astro.props;
 ---
 <!doctype html>
@@ -9,8 +10,17 @@ const { title } = Astro.props;
     <meta charset="utf-8" />
     <meta name="viewport" content="width=device-width, initial-scale=1" />
     <title>{title}</title>
+    <!-- Runs before first paint: pick the season from the visitor's clock and restore the petal pause choice. -->
+    <script is:inline>
+      (function () {
+        var m = new Date().getMonth(), root = document.documentElement;
+        root.dataset.season = m >= 2 && m <= 4 ? 'spring' : m >= 8 && m <= 10 ? 'autumn' : 'mixed';
+        try { if (localStorage.getItem('petals-paused') === '1') root.classList.add('petals-paused'); } catch (e) {}
+      })();
+    </script>
   </head>
   <body>
+    <PetalLayer />
     <slot />
   </body>
 </html>
