@@ -1,6 +1,7 @@
 // src/lib/route-map.ts
-// Pure layout for the route map. No imports, no Astro, no DOM.
-// All numbers are in SVG viewBox units (canvas: 1000 x 352).
+// Pure data model for the route map. No imports, no Astro, no DOM.
+// Dates are year-only, so stops are grouped into year zones instead of being
+// placed on a continuous time axis. Each zone is as wide as its busiest lane.
 
 export type Line = 'projects' | 'learning' | 'notes';
 
@@ -12,54 +13,42 @@ export type MapEntry = {
   href: string;
   skills: string[];
   related: string[]; // keys of other entries
-  featured?: boolean; // projects: bigger station with a label
+  featured?: boolean; // projects: bigger station
   cluster?: { id: string; label: string }; // learning: grouped into one station...
   highlight?: boolean; // ...unless it is a highlight, which stays a station of its own
 };
 
-export type Station = {
+export type Stop = {
   key: string; // entry key, or "cluster/<id>"
-  keys: string[]; // every entry key this station stands for
+  keys: string[]; // every entry key this stop stands for
   line: Line;
-  shape: 'circle' | 'square' | 'pill';
-  x: number;
-  y: number;
-  hw: number; // half width (spacing)
-  hh: number; // half height (where connectors attach)
+  kind: 'dot' | 'square' | 'pill';
+  big: boolean; // featured project
+  code: string; // station code per lane, oldest = 01: P01, L03, N02
   title: string;
+  label: string; // short text drawn on the map
   href: string;
   skills: string[];
-  when: string; // "Nov 2022", or "12 certificates, Oct 2022 to Jun 2024" for a cluster
-  caption: string; // text shown under the map when the station is active
-  label: string; // text drawn on the map ('' = none)
-  labelAnchor: 'start' | 'middle' | 'end';
-  labelBelow: boolean;
-  delay: number; // ms, for the intro animation
+  year: number;
+  when: string; // "2026", or "15 certificates, 2026" for a cluster
+  col: number; // 1-based slot across all zones (desktop grid column)
+  related: string[]; // keys of other stops linked to this one
 };
 
-export type Layout = {
-  width: number;
-  height: number;
-  laneX1: number;
-  nowX: number;
-  lanes: { line: Line; y: number; title: string; subtitle: string }[];
-  stations: Station[]; // sorted by lane, then by x
-  connectors: string[]; // SVG path data
+export type Zone = { year: number; start: number; weight: number };
+
+export type Journey = {
+  zones: Zone[]; // ascending years present in the data
+  slots: number; // total slot columns across all zones
+  lanes: { line: Line; title: string; count: number }[];
+  stops: Stop[]; // lane order, then chronological
+  timeline: { year: number; stops: Stop[] }[]; // newest year first, for the mobile strip map
 };
 
 // ---- constants -------------------------------------------------------------
-const W = 1000;
-const H = 352;
-const LANE_X1 = 150; // where lane lines start
-const LEFT = 164;    // leftmost station boundary
-const RIGHT = 924;   // rightmost station boundary
-const X0 = 176;      // earliest date position
-const X1 = 904;      // latest date position
-const NOW_X = 944;   // now line position
-const GAP = 10;      // minimum space between stations
 const LANES: Line[] = ['projects', 'learning', 'notes'];
-const LANE_Y: Record<Line, number> = { projects: 120, learning: 216, notes: 312 };
 const LANE_TITLE: Record<Line, string> = { projects: 'Projects', learning: 'Learning', notes: 'Notes' };
+const LANE_CODE: Record<Line, string> = { projects: 'P', learning: 'L', notes: 'N' };
 
 // Explicit chronological arrangement when entries share the same year
 const CHRONO_ORDER: Record<string, number> = {
@@ -79,34 +68,45 @@ const CHRONO_ORDER: Record<string, number> = {
   'projects/egovph-hackathon-2026': 250,
 };
 
-// Waypoint labels for the map canvas (concise transit names)
+// Short labels for the map (concise transit names). Full titles show in the popover.
 const WAYPOINT_LABELS: Record<string, string> = {
   'projects/mafi-receipt': 'MAFI Invoicing',
   'projects/galaxent-attendance': 'Galaxent Portal',
   'projects/bubble-pos': 'Bubble POS',
   'projects/mafi-custom-3d': 'MAFI 3D Clothing',
+  'projects/jarvis-ai': 'Jarvis.AI',
   'projects/tlcph': 'Tax Leaders Circle',
   'projects/cnd-upraze': 'CND Upraze',
   'projects/bizmaker-erp': 'BizMaker ERP',
   'projects/omma-platform': 'STI OMMA',
   'projects/gamma-pm': 'Gamma PM',
   'projects/egovph-hackathon-2026': 'eGovPH Hackathon',
+  'credentials/ai-fundamentals-ibm': 'IBM AI',
+  'credentials/junior-cybersecurity-analyst': 'Junior Cyber Analyst',
+  'credentials/seminar-dict-r2-ipr': 'DICT R2 Seminar',
+  'credentials/seminar-dict-r8-cybershield': 'Cyber-Shield Seminar',
+  'credentials/workshop-packetworx-lorawan': 'LoRaWAN Workshop',
+  'notes/graduating-magna-cum-laude': 'Magna Cum Laude',
+  'notes/junior-cybersecurity-analyst-journey': 'Blue Team Journey',
+  'notes/seminar-1-takeaways': 'DICT R2 Takeaways',
+  'notes/seminar-2-takeaways': 'Cyber-Shield Notes',
+  'notes/seminar-3-takeaways': 'LoRaWAN Notes',
+  'notes/two-years-of-freelance-systems': 'Two Years Freelance',
 };
 
-const formatYear = (d: Date | number) =>
-  String(new Date(d).getUTCFullYear());
-const n1 = (v: number) => +v.toFixed(1);
+const yearOf = (d: Date) => d.getUTCFullYear();
+const orderOf = (key: string) => CHRONO_ORDER[key] ?? 999;
 
-type Item = Omit<Station, 'delay' | 'labelAnchor' | 'labelBelow' | 'y'> & { t: number };
+type Draft = Omit<Stop, 'code' | 'col' | 'related'> & { t: number };
 
-export function buildRouteMap(entries: MapEntry[], now: Date): Layout {
+export function buildJourney(entries: MapEntry[]): Journey {
   const byKey = new Map(entries.map((e) => [e.key, e]));
   for (const e of entries)
     for (const k of e.related)
       if (!byKey.has(k)) throw new Error(`"${e.key}" relates to "${k}", which does not exist.`);
 
-  // 1. Entries become stations. Clustered credentials share one station.
-  const items: Item[] = [];
+  // 1. Entries become stops. Clustered credentials share one pill stop.
+  const drafts: Draft[] = [];
   const clusters = new Map<string, MapEntry[]>();
   for (const e of entries) {
     if (e.cluster && !e.highlight) {
@@ -115,123 +115,105 @@ export function buildRouteMap(entries: MapEntry[], now: Date): Layout {
       list.push(e);
       continue;
     }
-    const size = e.line === 'learning' ? 9 : e.line === 'notes' ? 9 : e.featured ? 11 : 7;
-    items.push({
+    drafts.push({
       key: e.key,
       keys: [e.key],
       line: e.line,
-      shape: e.line === 'learning' ? 'square' : 'circle',
-      x: 0,
-      hw: size,
-      hh: size,
+      kind: e.line === 'learning' ? 'square' : 'dot',
+      big: e.line === 'projects' && !!e.featured,
       title: e.title,
+      label: WAYPOINT_LABELS[e.key] ?? e.title,
       href: e.href,
       skills: e.skills,
-      when: formatYear(e.date),
-      caption: `${LANE_TITLE[e.line]}: ${e.title}, ${formatYear(e.date)}`,
-      label: e.featured ? (WAYPOINT_LABELS[e.key] ?? (e.title.length > 20 ? e.title.slice(0, 19) + '…' : e.title)) : '',
+      year: yearOf(e.date),
+      when: String(yearOf(e.date)),
       t: e.date.getTime(),
     });
   }
   for (const [id, list] of clusters) {
     const label = list[0].cluster!.label;
-    const times = list.map((e) => e.date.getTime());
-    const w = Math.max(72, label.length * 8 + 32);
-    items.push({
+    const years = list.map((e) => yearOf(e.date));
+    const first = Math.min(...years);
+    const last = Math.max(...years);
+    drafts.push({
       key: `cluster/${id}`,
       keys: list.map((e) => e.key),
       line: 'learning',
-      shape: 'pill',
-      x: 0,
-      hw: w / 2,
-      hh: 13,
-      title: label,
+      kind: 'pill',
+      big: false,
+      title: `${label} certificates`,
+      label: `${label} · ${list.length}`,
       href: `/learning/#${id}`,
       skills: [...new Set(list.flatMap((e) => e.skills))],
-      when: `${list.length} certificates, ${formatYear(Math.min(...times))} to ${formatYear(Math.max(...times))}`,
-      caption: `Learning: ${label}, ${list.length} certificates, ${formatYear(Math.min(...times))} to ${formatYear(Math.max(...times))}`,
-      label,
-      t: times.reduce((a, b) => a + b, 0) / times.length,
+      year: last,
+      when: `${list.length} certificate${list.length === 1 ? '' : 's'}, ${first === last ? first : `${first} to ${last}`}`,
+      t: Math.max(...list.map((e) => e.date.getTime())),
     });
   }
 
-  // 2. Dates become X positions.
-  const all = entries.map((e) => e.date.getTime());
-  const t0 = all.length ? Math.min(...all) : now.getTime();
-  const t1 = Math.max(now.getTime(), ...all, t0 + 30 * 864e5);
-  const xOf = (t: number) => X0 + ((t - t0) / (t1 - t0)) * (X1 - X0);
+  // 2. Chronological order within each lane: date, then explicit order, then key.
+  drafts.sort(
+    (a, b) =>
+      LANES.indexOf(a.line) - LANES.indexOf(b.line) ||
+      a.t - b.t ||
+      orderOf(a.key) - orderOf(b.key) ||
+      a.key.localeCompare(b.key),
+  );
 
-  // 3. Spacing relaxation per lane.
-  const stations: Station[] = [];
+  // 3. Year zones, each as wide as its busiest lane.
+  const years = [...new Set(drafts.map((d) => d.year))].sort((a, b) => a - b);
+  const zones: Zone[] = [];
+  let start = 1;
+  for (const year of years) {
+    const weight = Math.max(1, ...LANES.map((l) => drafts.filter((d) => d.line === l && d.year === year).length));
+    zones.push({ year, start, weight });
+    start += weight;
+  }
+
+  // 4. Columns (sparse lanes spread across their zone) and station codes.
+  const stops: Stop[] = [];
   for (const line of LANES) {
-    const lane = items.filter((i) => i.line === line);
-    for (const i of lane) i.x = Math.min(Math.max(xOf(i.t), LEFT + i.hw), RIGHT - i.hw);
-    const orderOf = (key: string) => CHRONO_ORDER[key] ?? 999;
-    lane.sort((a, b) => {
-      const dx = a.x - b.x;
-      if (Math.abs(dx) > 0.01) return dx;
-      const ordA = orderOf(a.key);
-      const ordB = orderOf(b.key);
-      if (ordA !== ordB) return ordA - ordB;
-      return a.key.localeCompare(b.key);
-    });
-    for (let i = 1; i < lane.length; i++) {
-      const min = lane[i - 1].x + lane[i - 1].hw + GAP + lane[i].hw;
-      if (lane[i].x < min) lane[i].x = min;
-    }
-    for (let i = lane.length - 1; i >= 0; i--) {
-      const max = i === lane.length - 1 ? RIGHT - lane[i].hw : lane[i + 1].x - lane[i + 1].hw - GAP - lane[i].hw;
-      if (lane[i].x > max) lane[i].x = max;
-    }
-    if (lane.length && lane[0].x - lane[0].hw < LEFT - 0.01)
-      throw new Error(`Too many entries on the ${line} line to fit (about 30 fit). Merge or remove some.`);
-
-    for (const i of lane) {
-      stations.push({
-        ...i,
-        label: i.label,
-        x: n1(i.x),
-        y: LANE_Y[line],
-        labelAnchor: 'start',
-        labelBelow: false,
-        delay: Math.round(150 + (1100 * (i.x - LEFT)) / (NOW_X - LEFT)),
+    const lane = drafts.filter((d) => d.line === line);
+    lane.forEach(({ t: _t, ...d }, index) => {
+      const zone = zones.find((z) => z.year === d.year)!;
+      const sameYear = lane.filter((x) => x.year === d.year);
+      const i = sameYear.findIndex((x) => x.key === d.key);
+      stops.push({
+        ...d,
+        code: `${LANE_CODE[line]}${String(index + 1).padStart(2, '0')}`,
+        col: zone.start + Math.floor(((i + 0.5) * zone.weight) / sameYear.length),
+        related: [],
       });
-    }
+    });
   }
 
-  // 4. Connectors between neighbouring lanes.
-  const at = new Map<string, Station>();
-  for (const s of stations) for (const k of s.keys) at.set(k, s);
-  const seen = new Set<string>();
-  const connectors: string[] = [];
+  // 5. Related links between stops (both directions; cluster members resolve to the pill).
+  const stopOf = new Map<string, Stop>();
+  for (const s of stops) for (const k of s.keys) stopOf.set(k, s);
   for (const e of entries)
     for (const k of e.related) {
-      const p = at.get(e.key)!, q = at.get(k)!;
-      if (p === q || Math.abs(LANES.indexOf(p.line) - LANES.indexOf(q.line)) !== 1) continue;
-      const [a, b] = LANES.indexOf(p.line) < LANES.indexOf(q.line) ? [p, q] : [q, p];
-      const id = `${a.key}|${b.key}`;
-      if (seen.has(id)) continue;
-      seen.add(id);
-      const y1 = a.y + a.hh, y2 = b.y - b.hh, dx = b.x - a.x, h = Math.abs(dx), m = (y1 + y2) / 2;
-      connectors.push(
-        h < 1 ? `M${a.x} ${y1}V${y2}`
-        : h > y2 - y1 ? `M${a.x} ${y1}C${a.x} ${m} ${b.x} ${m} ${b.x} ${y2}`
-        : `M${a.x} ${y1}V${n1(m - h / 2)}L${b.x} ${n1(m + h / 2)}V${y2}`,
-      );
+      const a = stopOf.get(e.key)!;
+      const b = stopOf.get(k)!;
+      if (a === b) continue;
+      if (!a.related.includes(b.key)) a.related.push(b.key);
+      if (!b.related.includes(a.key)) b.related.push(a.key);
     }
 
+  // 6. Mobile timeline: newest year first; within a year, lane by lane, newest first.
+  const timeline = [...years].reverse().map((year) => ({
+    year,
+    stops: LANES.flatMap((line) => stops.filter((s) => s.line === line && s.year === year).reverse()),
+  }));
+
   return {
-    width: W,
-    height: H,
-    laneX1: LANE_X1,
-    nowX: NOW_X,
+    zones,
+    slots: start - 1,
     lanes: LANES.map((line) => ({
       line,
-      y: LANE_Y[line],
       title: LANE_TITLE[line],
-      subtitle: `${entries.filter((e) => e.line === line).length} entries`,
+      count: entries.filter((e) => e.line === line).length,
     })),
-    stations,
-    connectors,
+    stops,
+    timeline,
   };
 }

@@ -1,12 +1,6 @@
 ---
 import { getCollection } from 'astro:content';
-import { buildRouteMap, type MapEntry } from '../lib/route-map';
-
-interface Props {
-  now?: Date;
-}
-
-const { now = new Date() } = Astro.props;
+import { buildJourney, type Line, type MapEntry } from '../lib/route-map';
 
 const [projects, credentials, notes] = await Promise.all([
   getCollection('projects'),
@@ -47,8 +41,10 @@ const entries: MapEntry[] = [
   })),
 ];
 
-const layout = buildRouteMap(entries, now);
-const { width: W, height: H, nowX } = layout;
+const journey = buildJourney(entries);
+const busiest = Math.max(...journey.zones.map((z) => z.weight));
+const laneTitle = Object.fromEntries(journey.lanes.map((l) => [l.line, l.title])) as Record<Line, string>;
+const laneStops = (line: Line) => journey.stops.filter((s) => s.line === line);
 
 const slug = (s: string) =>
   s
@@ -160,8 +156,6 @@ const skillCategories = [
     ],
   },
 ];
-
-const loop = `M${nowX - 27} 47C${nowX - 25} 32 ${nowX + 27} 30 ${nowX + 31} 49C${nowX + 34} 70 ${nowX - 28} 72 ${nowX - 33} 52`;
 ---
 
 <section class="route-map" data-route-map aria-labelledby="rm-heading">
@@ -534,215 +528,105 @@ const loop = `M${nowX - 27} 47C${nowX - 25} 32 ${nowX + 27} 30 ${nowX + 31} 49C$
   </div>
 
   <div class="rm-top-header">
-    <div class="rm-header-left">
-      <h2 id="rm-heading" class="rm-section-title">Route Map</h2>
+    <h2 id="rm-heading" class="rm-section-title">Route Map</h2>
+    <ul class="jr-legend" aria-label="Lines">
+      {journey.lanes.map((l) => (
+        <li class={`jr-legend-item rm-${l.line}`}>
+          <span class="jr-legend-swatch" aria-hidden="true"></span>
+          {l.title}
+          <span class="jr-legend-count">{l.count}</span>
+        </li>
+      ))}
+    </ul>
+  </div>
+
+  <!-- Desktop: year-zone metro map -->
+  <div class="jr-desktop" data-jr-frame>
+    <div class="jr-scroll" data-jr-scroll>
+      <div class="jr-grid" style={`--slots: ${journey.slots}`}>
+        {journey.zones.map((z) => (
+          <div
+            class={`jr-zone${z.weight === busiest ? ' is-busy' : ''}`}
+            style={`grid-column: ${z.start + 1} / span ${z.weight}`}
+            aria-hidden="true"
+          >
+            <span class="jr-year">{z.year}</span>
+          </div>
+        ))}
+        <div class="jr-zone jr-zone--now" aria-hidden="true">
+          <span class="jr-year">Now</span>
+        </div>
+
+        {journey.lanes.map((l, row) => (
+          <div class={`jr-lane rm-${l.line}`} style={`grid-row: ${row + 2}`}>
+            <h3 class="jr-lane-title">
+              {l.title}
+              <small>{l.count} {l.count === 1 ? 'entry' : 'entries'}</small>
+            </h3>
+            <ol class="jr-stops" aria-label={`${l.title}, oldest first`}>
+              {laneStops(l.line).map((s) => (
+                <li class="jr-stop" style={`grid-column: ${s.col}; --d: ${150 + s.col * 70}ms`}>
+                  <a
+                    class="jr-link"
+                    href={s.href}
+                    data-key={s.key}
+                    data-skills={skillsOf(s.skills)}
+                    data-related={s.related.join(' ')}
+                    data-title={s.title}
+                    data-meta={`${s.code} · ${laneTitle[s.line]} · ${s.when}`}
+                    data-top={s.skills.slice(0, 3).join('|')}
+                  >
+                    <span class="jr-mark-wrap" aria-hidden="true">
+                      {s.kind === 'pill' ? (
+                        <span class="jr-mark jr-mark--pill">{s.label}</span>
+                      ) : (
+                        <span class={`jr-mark jr-mark--${s.kind}${s.big ? ' is-big' : ''}`}></span>
+                      )}
+                    </span>
+                    <span class="jr-code">{s.code}</span>
+                    {s.kind !== 'pill' && <span class="jr-label">{s.label}</span>}
+                    <span class="sr-only">{s.kind === 'pill' ? s.title : s.label !== s.title ? `: ${s.title}` : ''}, {laneTitle[s.line]}, {s.when}</span>
+                  </a>
+                </li>
+              ))}
+            </ol>
+          </div>
+        ))}
+      </div>
     </div>
 
-    <!-- Mode Switcher Tabs -->
-    <div class="rm-view-tabs" role="tablist" aria-label="Journey view switch">
-      <button
-        type="button"
-        role="tab"
-        id="tab-map"
-        class="rm-tab-btn is-active"
-        aria-selected="true"
-        aria-controls="panel-map"
-        data-view="map"
-      >
-        <svg width="15" height="15" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round" aria-hidden="true">
-          <circle cx="6" cy="19" r="3"></circle>
-          <path d="M9 19h8.5a3.5 3.5 0 0 0 0-7h-11a3.5 3.5 0 0 1 0-7H15"></path>
-          <circle cx="18" cy="5" r="3"></circle>
-        </svg>
-        <span>Route Map</span>
-      </button>
-
-      <button
-        type="button"
-        role="tab"
-        id="tab-list"
-        class="rm-tab-btn"
-        aria-selected="false"
-        aria-controls="panel-list"
-        data-view="list"
-      >
-        <svg width="15" height="15" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round" aria-hidden="true">
-          <line x1="8" y1="6" x2="21" y2="6"></line>
-          <line x1="8" y1="12" x2="21" y2="12"></line>
-          <line x1="8" y1="18" x2="21" y2="18"></line>
-          <line x1="3" y1="6" x2="3.01" y2="6"></line>
-          <line x1="3" y1="12" x2="3.01" y2="12"></line>
-          <line x1="3" y1="18" x2="3.01" y2="18"></line>
-        </svg>
-        <span>List View</span>
-      </button>
+    <div class="jr-pop" data-jr-pop aria-hidden="true" hidden>
+      <strong class="jr-pop-title" data-pop="title"></strong>
+      <span class="jr-pop-meta" data-pop="meta"></span>
+      <ul class="jr-pop-skills" data-pop="skills"></ul>
     </div>
   </div>
 
-  <figure class="rm-figure" id="panel-map" role="tabpanel" aria-labelledby="tab-map">
-    <div class="rm-figure-frame">
-      <svg class="rm-svg" viewBox={`0 0 ${W} ${H}`} aria-hidden="true" focusable="false">
-        <defs>
-          <mask id="rm-reveal" maskUnits="userSpaceOnUse" x="0" y="0" width={W} height={H}>
-            <path class="rm-wipe" d={`M0 ${H / 2}H${W}`} pathLength="1" fill="none" stroke="#fff" stroke-width={H} />
-          </mask>
-          <!-- Neon Glow Filters -->
-          <filter id="glow-orange" x="-20%" y="-20%" width="140%" height="140%">
-            <feDropShadow dx="0" dy="0" stdDeviation="3" flood-color="#FF6B00" flood-opacity="0.6"/>
-          </filter>
-          <filter id="glow-emerald" x="-20%" y="-20%" width="140%" height="140%">
-            <feDropShadow dx="0" dy="0" stdDeviation="3" flood-color="#00FF9D" flood-opacity="0.6"/>
-          </filter>
-          <filter id="glow-cyan" x="-20%" y="-20%" width="140%" height="140%">
-            <feDropShadow dx="0" dy="0" stdDeviation="3" flood-color="#00E5FF" flood-opacity="0.6"/>
-          </filter>
-        </defs>
-
-        <!-- Track Background Grid Lines -->
-        <g class="rm-grid-lines">
-          {layout.lanes.map((l) => (
-            <line class="rm-grid-lane" x1={layout.laneX1} y1={l.y} x2={nowX} y2={l.y} />
-          ))}
-        </g>
-
-        <!-- Glowing Active Neon Rails -->
-        <g class="rm-lines" mask="url(#rm-reveal)">
-          {layout.lanes.map((l) => (
-            <line class={`rm-line rm-${l.line}`} x1={layout.laneX1} y1={l.y} x2={nowX} y2={l.y} />
-          ))}
-        </g>
-
-        <!-- Cyber Circuit Connectors -->
-        <g class="rm-connectors">
-          {layout.connectors.map((d) => (
-            <path d={d} />
-          ))}
-        </g>
-
-        <!-- Futuristic Temporal "Now" Line -->
-        <g class="rm-now">
-          <line x1={nowX} y1="72" x2={nowX} y2="334" />
-          <text x={nowX} y="54" text-anchor="middle" class="rm-now-text">LIVE NOW</text>
-          <path class="rm-loop" pathLength="1" d={loop} />
-        </g>
-
-        <!-- Station Waypoints -->
-        <g class="rm-stations">
-          {layout.stations.map((s) => (
-            <g
-              class={`rm-station rm-${s.line}`}
-              data-key={s.key}
-              data-shape={s.shape}
-              data-x={s.x}
-              data-y={s.y}
-              data-skills={skillsOf(s.skills)}
-              data-caption={s.caption}
-              style={`--d:${s.delay}ms`}
-            >
-              <a href={s.href} tabindex="-1">
-                {s.shape === 'circle' ? (
-                  <circle cx={s.x} cy={s.y} r={s.hw} />
-                ) : (
-                  <rect
-                    x={+(s.x - s.hw).toFixed(1)}
-                    y={s.y - s.hh}
-                    width={s.hw * 2}
-                    height={s.hh * 2}
-                    rx={s.shape === 'pill' ? s.hh : 4}
-                  />
-                )}
-                {s.shape === 'pill' && (
-                  <text
-                    class="rm-pill-label"
-                    x={s.x}
-                    y={s.y + 4.5}
-                    text-anchor="middle"
-                  >
-                    {s.label}
-                  </text>
-                )}
+  <!-- Mobile: vertical strip map, newest first -->
+  <div class="jr-mobile">
+    {journey.timeline.map((g) => (
+      <section class="jm-year" aria-labelledby={`jm-year-${g.year}`}>
+        <h3 class="jm-year-title" id={`jm-year-${g.year}`}>{g.year}</h3>
+        <ol class="jm-list">
+          {g.stops.map((s) => (
+            <li class={`jm-row rm-${s.line}`}>
+              <a class="jm-link" href={s.href} data-key={s.key} data-skills={skillsOf(s.skills)}>
+                <span class="jm-rails" aria-hidden="true">
+                  <span class={`jm-mark jm-mark--${s.kind}`}></span>
+                </span>
+                <span class="jm-text">
+                  <span class="jm-title">{s.title}</span>
+                  <span class="jm-meta">{s.code} · {laneTitle[s.line]} · {s.when}</span>
+                </span>
+                <svg class="jm-chevron" width="16" height="16" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round" aria-hidden="true">
+                  <polyline points="9 18 15 12 9 6"></polyline>
+                </svg>
               </a>
-            </g>
+            </li>
           ))}
-        </g>
-
-        <!-- Slanted Canvas Labels (/) -->
-        <g class="rm-labels">
-          {layout.stations
-            .filter((s) => s.label && s.shape !== 'pill')
-            .map((s) => (
-              <text
-                class="rm-label rm-slanted-label"
-                x={s.x + 2}
-                y={s.y - (s.hh + 8)}
-                text-anchor="start"
-                transform={`rotate(-58 ${s.x + 2} ${s.y - (s.hh + 8)})`}
-                data-skills={skillsOf(s.skills)}
-                style={`--d:${s.delay}ms`}
-              >
-                {s.label}
-              </text>
-            ))}
-          {layout.lanes.map((l) => (
-            <g class="rm-lane-legend">
-              <text class="rm-title" x="16" y={l.y - 4}>
-                {l.title}
-              </text>
-              <text class="rm-sub" x="16" y={l.y + 14}>
-                {l.subtitle}
-              </text>
-            </g>
-          ))}
-        </g>
-
-        <!-- Active Targeting Marker -->
-        <g class="rm-marker">
-          <circle r="16" class="rm-marker-outer" />
-          <circle r="5" class="rm-marker-inner" />
-        </g>
-      </svg>
-    </div>
-
-    <!-- Active Station HUD Info Bar -->
-    <figcaption class="rm-caption" data-rm="caption">
-      <div class="caption-content">
-        <span class="caption-pulse"></span>
-        <span class="caption-text">Select or hover over any track waypoint to inspect mission details.</span>
-      </div>
-    </figcaption>
-  </figure>
-
-  <!-- Alternate List View -->
-  <div class="rm-lists" id="panel-list" role="tabpanel" aria-labelledby="tab-list" hidden>
-    {layout.lanes.map((l) => {
-      let laneStations = layout.stations.filter((s) => s.line === l.line).reverse();
-      if (l.line === 'projects') {
-        const order2024: Record<string, number> = {
-          'projects/mafi-receipt': 1,
-          'projects/galaxent-attendance': 2,
-          'projects/bubble-pos': 3,
-        };
-        const p2024 = laneStations.filter((s) => order2024[s.key] !== undefined);
-        p2024.sort((a, b) => order2024[a.key] - order2024[b.key]);
-        const others = laneStations.filter((s) => order2024[s.key] === undefined);
-        laneStations = [...others, ...p2024];
-      }
-      return (
-        <section class={`rm-list rm-${l.line}`}>
-          <h3>{l.title}</h3>
-          <ul>
-            {laneStations.map((s) => (
-              <li data-skills={skillsOf(s.skills)} data-key={s.key}>
-                <a href={s.href} data-key={s.key}>
-                  <b>{s.title}</b>
-                  <small>{s.when}</small>
-                </a>
-              </li>
-            ))}
-          </ul>
-        </section>
-      );
-    })}
+        </ol>
+      </section>
+    ))}
   </div>
 
   <p class="sr-only" role="status" data-rm="status"></p>
@@ -751,237 +635,463 @@ const loop = `M${nowX - 27} 47C${nowX - 25} 32 ${nowX + 27} 30 ${nowX + 31} 49C$
 
 <style is:global>
 .route-map {
-  max-width: 1080px;
-  margin-inline: auto;
   color: var(--ink);
   font-family: var(--font);
-}
-
-.rm-top-header {
-  display: flex;
-  align-items: center;
-  justify-content: space-between;
-  margin-bottom: 1.25rem;
-  flex-wrap: wrap;
-  gap: 1rem;
-}
-
-.rm-section-title {
-  margin: 0;
-  font-size: 1.6rem;
-  font-weight: 700;
-  color: var(--ink);
-  letter-spacing: -0.01em;
-}
-
-.rm-view-tabs {
-  display: inline-flex;
-  align-items: center;
-  background: var(--surface-2);
-  border: 1px solid var(--rail);
-  border-radius: 8px;
-  padding: 3px;
-  gap: 3px;
-}
-
-.rm-tab-btn {
-  display: inline-flex;
-  align-items: center;
-  gap: 0.45rem;
-  padding: 0.4rem 0.85rem;
-  border: none;
-  background: transparent;
-  color: var(--ink-2);
-  font-family: inherit;
-  font-size: 0.85rem;
-  font-weight: 600;
-  border-radius: 6px;
-  cursor: pointer;
-  transition: all 0.15s ease;
-}
-
-.rm-tab-btn:hover {
-  color: var(--ink);
-}
-
-.rm-tab-btn.is-active {
-  background: var(--surface);
-  color: var(--ink);
-  font-weight: 700;
-  box-shadow: 0 1px 3px rgba(0, 0, 0, 0.08);
-}
-.rm-sub-caption {
-  margin: 0;
-  color: var(--ink-2);
-  font-size: 1rem;
 }
 
 .rm-projects { --lane: var(--projects); --lane-text: var(--projects-text); --glow: var(--projects-glow); }
 .rm-learning { --lane: var(--learning); --lane-text: var(--learning-text); --glow: var(--learning-glow); }
 .rm-notes    { --lane: var(--notes);    --lane-text: var(--notes-text);    --glow: var(--notes-glow); }
 
-/* ---- THE MAP DISPLAY ---- */
-.rm-figure {
-  margin: 1.5rem 0 0;
-}
-.rm-figure-frame {
-  background: #FFFFFF;
-  border: 1px solid var(--rail);
-  border-radius: 16px;
-  padding: 1.25rem 0.75rem 1rem;
-  box-shadow: 0 4px 24px rgba(15, 34, 51, 0.06);
-  position: relative;
-  overflow: hidden;
-}
-
-.rm-svg {
-  display: block;
-  width: 100%;
-  height: auto;
-  aspect-ratio: 1000 / 352;
-}
-.rm-svg text {
-  font: 700 12px var(--font);
-  fill: #0F2233;
-  pointer-events: none;
-}
-.rm-svg .rm-title {
-  font-size: 14px;
-  letter-spacing: 0.02em;
-  font-weight: 800;
-  fill: #0F2233;
-}
-.rm-svg .rm-sub {
-  font-weight: 600;
-  font-size: 11px;
-  fill: #64748B;
-}
-.rm-slanted-label {
-  font-size: 9.5px !important;
-  font-weight: 700 !important;
-  fill: #1E293B !important;
-  letter-spacing: 0.02em;
-  text-rendering: geometricPrecision;
-}
-.rm-pill-label {
-  font-size: 11.5px !important;
-  font-weight: 800 !important;
-  fill: #0F172A !important;
-}
-
-.rm-grid-lane {
-  stroke: #F1F5F9;
-  stroke-width: 14;
-  stroke-linecap: round;
-}
-
-.rm-line {
-  stroke: var(--lane);
-  stroke-width: 5;
-  stroke-linecap: round;
-}
-.rm-line.rm-notes {
-  stroke-dasharray: 10 5;
-  stroke-linecap: butt;
-}
-.rm-connectors path {
-  fill: none;
-  stroke: #94A3B8;
-  stroke-width: 2;
-  stroke-linejoin: round;
-  stroke-dasharray: 4 3;
-}
-.rm-now line {
-  stroke: #0284C7;
-  stroke-width: 1.5;
-  stroke-dasharray: 4 4;
-  opacity: 0.8;
-}
-.rm-now-text {
-  font-size: 11px !important;
-  font-weight: 800 !important;
-  fill: #0284C7 !important;
-  letter-spacing: 0.08em;
-}
-.rm-loop {
-  fill: none;
-  stroke: #0284C7;
-  stroke-width: 1.5;
-  stroke-linecap: round;
-  opacity: 0.7;
-}
-
-.rm-station {
-  cursor: pointer;
-}
-.rm-station :is(circle, rect) {
-  fill: #FFFFFF;
-  stroke: var(--lane);
-  stroke-width: 3;
-  transition: stroke 0.15s ease, fill 0.15s ease, stroke-width 0.15s ease;
-}
-.rm-station:hover :is(circle, rect),
-.rm-station.is-active :is(circle, rect) {
-  fill: var(--lane);
-  stroke: #FFFFFF;
-  stroke-width: 3.5;
-  filter: drop-shadow(0 0 6px var(--lane));
-}
-.rm-station[data-dim], .rm-label[data-dim] {
-  opacity: 0.15;
-}
-
-.rm-marker-outer {
-  fill: none;
-  stroke: #0284C7;
-  stroke-width: 2;
-  stroke-dasharray: 4 2;
-  animation: reticle-spin 6s linear infinite;
-  transform-origin: center;
-}
-.rm-marker-inner {
-  fill: #0284C7;
-}
-@keyframes reticle-spin {
-  from { transform: rotate(0deg); }
-  to { transform: rotate(360deg); }
-}
-
-.rm-marker {
-  opacity: 0;
-  pointer-events: none;
-  transform: translate(calc(var(--mx, 0) * 1px), calc(var(--my, 0) * 1px));
-}
-.rm-marker.is-on {
-  opacity: 1;
-}
-
-.rm-caption {
-  margin: 0.75rem 0 0;
-}
-.caption-content {
+.rm-top-header {
   display: flex;
   align-items: center;
-  gap: 0.65rem;
-  background: #F8FAFC;
-  border: 1px solid var(--rail);
-  border-radius: 8px;
-  padding: 0.65rem 1rem;
-  font-size: 0.92rem;
+  justify-content: space-between;
+  flex-wrap: wrap;
+  gap: var(--space-3) var(--space-4);
+  margin-bottom: var(--space-4);
+}
+
+.rm-section-title {
+  margin: 0;
+  font-size: 1.6rem;
+  font-weight: 700;
+  letter-spacing: -0.01em;
+}
+
+.jr-legend {
+  display: flex;
+  flex-wrap: wrap;
+  gap: var(--space-2);
+  margin: 0;
+  padding: 0;
+  list-style: none;
+}
+
+.jr-legend-item {
+  display: inline-flex;
+  align-items: center;
+  gap: 0.4rem;
+  padding: 0.25rem 0.65rem;
+  border-radius: 999px;
+  background: color-mix(in srgb, var(--lane) 9%, var(--surface));
+  color: var(--lane-text);
+  font-size: 0.82rem;
+  font-weight: 700;
+}
+
+.jr-legend-swatch {
+  width: 9px;
+  height: 9px;
+  border-radius: 2px;
+  background: var(--lane);
+}
+
+.jr-legend-count {
+  color: var(--ink-3);
+  font-weight: 600;
+}
+
+/* ---- DESKTOP: YEAR-ZONE METRO MAP ---- */
+.jr-desktop {
+  position: relative;
+  background: var(--surface);
+  border: 1px solid var(--border);
+  border-radius: var(--radius-lg);
+  box-shadow: var(--shadow-card);
+}
+
+.jr-scroll {
+  overflow-x: auto;
+  padding: var(--space-4) var(--space-4) var(--space-5);
+  border-radius: inherit;
+}
+
+.jr-scroll.can-scroll-right {
+  mask-image: linear-gradient(to right, #000 calc(100% - 32px), transparent);
+}
+.jr-scroll.can-scroll-left {
+  mask-image: linear-gradient(to right, transparent, #000 32px);
+}
+.jr-scroll.can-scroll-left.can-scroll-right {
+  mask-image: linear-gradient(to right, transparent, #000 32px, #000 calc(100% - 32px), transparent);
+}
+
+.jr-grid {
+  display: grid;
+  grid-template-columns: 7rem repeat(var(--slots), minmax(5rem, 1fr)) 3.25rem;
+  grid-template-rows: 2.5rem repeat(3, auto);
+}
+
+.jr-zone {
+  grid-row: 1 / -1;
+  display: flex;
+  justify-content: center;
+  border-left: 1px dashed var(--border-strong);
+  border-radius: var(--radius-md) var(--radius-md) 0 0;
+}
+.jr-zone.is-busy {
+  background: color-mix(in srgb, var(--projects) 5%, transparent);
+}
+.jr-zone--now {
+  grid-column: -2 / -1;
+  background: color-mix(in srgb, var(--notes) 7%, transparent);
+}
+
+.jr-year {
+  padding-top: 0.35rem;
+  font-size: 1rem;
+  font-weight: 700;
   color: var(--ink);
 }
-.caption-pulse {
-  width: 8px;
-  height: 8px;
+
+.jr-lane {
+  grid-column: 1 / -1;
+  display: grid;
+  grid-template-columns: subgrid;
+  position: relative;
+  padding: var(--space-3) 0 var(--space-2);
+}
+
+.jr-lane-title {
+  grid-column: 1;
+  position: sticky;
+  left: 0;
+  z-index: 2;
+  margin: 0;
+  padding-top: 0.2rem;
+  background: var(--surface);
+  color: var(--lane-text);
+  font-size: 1.02rem;
+  font-weight: 700;
+  line-height: 1.2;
+}
+.jr-lane-title small {
+  display: block;
+  margin-top: 0.15rem;
+  color: var(--ink-3);
+  font-size: 0.75rem;
+  font-weight: 600;
+}
+
+.jr-stops {
+  grid-column: 2 / -1;
+  display: grid;
+  grid-template-columns: subgrid;
+  position: relative;
+  margin: 0;
+  padding: 0;
+  list-style: none;
+}
+
+/* The rail, ending in a terminus inside the Now column */
+.jr-stops::before {
+  content: '';
+  position: absolute;
+  left: 0;
+  right: 1.6rem;
+  top: 15px;
+  height: 5px;
+  border-radius: 3px;
+  background: var(--lane);
+  transform-origin: left center;
+}
+.rm-notes .jr-stops::before {
+  height: 4px;
+  top: 15.5px;
+  background: repeating-linear-gradient(to right, var(--lane) 0 10px, transparent 10px 16px);
+}
+.jr-stops::after {
+  content: '';
+  position: absolute;
+  right: calc(1.6rem - 7px);
+  top: 10.5px;
+  width: 14px;
+  height: 14px;
   border-radius: 50%;
-  background: #059669;
-  box-shadow: 0 0 6px #059669;
+  background: var(--surface);
+  border: 3px solid var(--lane);
+  box-sizing: border-box;
+}
+
+.jr-stop {
+  position: relative;
+  z-index: 1;
+  min-width: 0;
+  grid-row: 1;
+}
+
+.jr-link {
+  display: flex;
+  flex-direction: column;
+  align-items: center;
+  gap: 0.2rem;
+  padding: 0 0.25rem 0.25rem;
+  border-radius: var(--radius-sm);
+  color: var(--ink);
+  text-align: center;
+  text-decoration: none;
+  transition: opacity 0.2s ease;
+}
+
+.jr-mark-wrap {
+  display: grid;
+  place-items: center;
+  height: 35px;
+}
+
+.jr-mark {
+  display: block;
+  box-sizing: border-box;
+  background: var(--surface);
+  border: 3px solid var(--lane);
+  transition: background 0.15s ease, box-shadow 0.15s ease, transform 0.15s ease;
+}
+.jr-mark--dot { width: 18px; height: 18px; border-radius: 50%; }
+.jr-mark--dot.is-big { width: 22px; height: 22px; border-width: 4px; }
+.jr-mark--square { width: 18px; height: 18px; border-radius: 4px; }
+.jr-mark--pill {
+  padding: 0.18rem 0.6rem;
+  border-width: 2px;
+  border-radius: 999px;
+  background: color-mix(in srgb, var(--lane) 12%, var(--surface));
+  color: var(--lane-text);
+  font-size: 0.8rem;
+  font-weight: 800;
+  white-space: nowrap;
+}
+
+.jr-code {
+  padding: 0 0.3rem;
+  border-radius: 3px;
+  background: color-mix(in srgb, var(--lane) 11%, var(--surface));
+  color: var(--lane-text);
+  font-family: var(--font-mono);
+  font-size: 0.68rem;
+  font-weight: 700;
+  letter-spacing: 0.02em;
+}
+
+.jr-label {
+  display: -webkit-box;
+  -webkit-box-orient: vertical;
+  -webkit-line-clamp: 3;
+  overflow: hidden;
+  max-width: 100%;
+  font-size: 0.8rem;
+  font-weight: 600;
+  line-height: 1.25;
+  overflow-wrap: anywhere;
+}
+
+/* Hover / focus: active stop fills, related stops on other lines glow, the rest soften */
+.jr-link.is-active .jr-mark,
+.jr-link:hover .jr-mark {
+  background: var(--lane);
+  box-shadow: 0 0 0 4px var(--glow);
+}
+.jr-link.is-active .jr-mark--pill,
+.jr-link:hover .jr-mark--pill {
+  color: #FFFFFF;
+  background: var(--lane-text);
+  border-color: var(--lane-text);
+}
+.jr-link.is-active .jr-label {
+  text-decoration: underline;
+  text-underline-offset: 2px;
+}
+.jr-link.is-related .jr-mark {
+  box-shadow: 0 0 0 4px var(--glow), 0 0 12px var(--glow);
+  transform: scale(1.15);
+}
+.jr-desktop.has-focus .jr-link:not(.is-active):not(.is-related) {
+  opacity: 0.45;
+}
+
+/* Popover */
+.jr-pop {
+  position: absolute;
+  z-index: 30;
+  width: max-content;
+  max-width: 260px;
+  padding: 0.6rem 0.8rem;
+  border: 1px solid var(--border);
+  border-radius: var(--radius-md);
+  background: var(--surface);
+  box-shadow: 0 10px 30px rgba(31, 42, 51, 0.14);
+  transform: translate(-50%, calc(-100% - 10px));
+  pointer-events: none;
+}
+.jr-pop-title {
+  display: block;
+  font-size: 0.9rem;
+  line-height: 1.3;
+}
+.jr-pop-meta {
+  display: block;
+  margin-top: 0.15rem;
+  color: var(--ink-3);
+  font-size: 0.78rem;
+  font-weight: 600;
+}
+.jr-pop-skills {
+  display: flex;
+  flex-wrap: wrap;
+  gap: 0.3rem;
+  margin: 0.45rem 0 0;
+  padding: 0;
+  list-style: none;
+}
+.jr-pop-skills:empty {
+  display: none;
+}
+.jr-pop-skills li {
+  padding: 0.05rem 0.45rem;
+  border-radius: 999px;
+  background: var(--surface-2);
+  border: 1px solid var(--border);
+  color: var(--ink-2);
+  font-size: 0.72rem;
+  font-weight: 600;
+}
+
+/* ---- MOBILE: VERTICAL STRIP MAP ---- */
+.jr-mobile {
+  display: none;
+  overflow: clip;
+  background: var(--surface);
+  border: 1px solid var(--border);
+  border-radius: var(--radius-lg);
+  box-shadow: var(--shadow-card);
+}
+
+.jm-year-title {
+  position: sticky;
+  top: 0;
+  z-index: 2;
+  margin: 0;
+  padding: 0.45rem var(--space-4);
+  background: var(--paper);
+  border-block: 1px solid var(--border);
+  font-size: 1rem;
+  font-weight: 700;
+}
+.jm-year:first-child .jm-year-title {
+  border-top: 0;
+}
+
+.jm-list {
+  margin: 0;
+  padding: 0;
+  list-style: none;
+}
+
+.jm-link {
+  display: flex;
+  align-items: stretch;
+  min-height: 56px;
+  color: var(--ink);
+  text-decoration: none;
+  transition: opacity 0.2s ease, background 0.15s ease;
+}
+.jm-link:hover {
+  background: var(--surface-2);
+}
+
+/* Three thin rails; each stop sits on its own lane's rail */
+.jm-rails {
+  position: relative;
+  flex: 0 0 60px;
+  background:
+    linear-gradient(var(--projects), var(--projects)) 15px 0 / 3px 100% no-repeat,
+    linear-gradient(var(--learning), var(--learning)) 29px 0 / 3px 100% no-repeat,
+    repeating-linear-gradient(to bottom, var(--notes) 0 6px, transparent 6px 10px) 43px 0 / 3px 100% no-repeat;
+}
+.rm-projects .jm-mark { --rx: 16.5px; }
+.rm-learning .jm-mark { --rx: 30.5px; }
+.rm-notes .jm-mark { --rx: 44.5px; }
+
+.jm-mark {
+  position: absolute;
+  left: var(--rx);
+  top: 50%;
+  box-sizing: border-box;
+  width: 14px;
+  height: 14px;
+  background: var(--surface);
+  border: 3px solid var(--lane);
+  transform: translate(-50%, -50%);
+}
+.jm-mark--dot { border-radius: 50%; }
+.jm-mark--square { border-radius: 3px; }
+.jm-mark--pill { width: 14px; height: 20px; border-radius: 999px; background: color-mix(in srgb, var(--lane) 25%, var(--surface)); }
+
+.jm-text {
+  flex: 1;
+  min-width: 0;
+  display: flex;
+  flex-direction: column;
+  justify-content: center;
+  padding: 0.55rem 0;
+}
+.jm-row + .jm-row .jm-text,
+.jm-row + .jm-row .jm-chevron {
+  border-top: 1px solid var(--border);
+}
+.jm-title {
+  font-size: 0.95rem;
+  font-weight: 700;
+  line-height: 1.3;
+}
+.jm-meta {
+  margin-top: 0.1rem;
+  color: var(--ink-3);
+  font-size: 0.8rem;
+  font-weight: 600;
+}
+.jm-chevron {
+  flex: 0 0 auto;
+  box-sizing: content-box;
+  align-self: stretch;
+  height: auto;
+  padding: 0 var(--space-3) 0 var(--space-2);
+  color: var(--ink-3);
+}
+
+@media (max-width: 959px) {
+  .jr-desktop { display: none; }
+  .jr-mobile { display: block; }
+}
+
+/* ---- SKILL FILTER: DIM AND LIGHT UP ---- */
+.jr-link[data-dim],
+.jm-link[data-dim] {
+  opacity: 0.22;
+}
+.jr-link.is-skill-match .jr-mark,
+.jm-link.is-skill-match .jm-mark {
+  background: var(--lane);
+  box-shadow: 0 0 0 3px var(--glow);
+}
+.jr-link.is-skill-match .jr-mark--pill {
+  color: #FFFFFF;
+  background: var(--lane-text);
+}
+
+/* ---- INTRO ANIMATION ---- */
+@media (prefers-reduced-motion: no-preference) {
+  .jr-stops::before { animation: jr-draw 0.9s cubic-bezier(0.3, 0, 0.2, 1) 0.1s backwards; }
+  .jr-stops::after { animation: jr-fade 0.3s ease-out 1s backwards; }
+  .jr-stop { animation: jr-pop 0.35s ease-out var(--d, 0ms) backwards; }
+  @keyframes jr-draw { from { transform: scaleX(0); } }
+  @keyframes jr-pop { from { opacity: 0; transform: scale(0.85); } }
+  @keyframes jr-fade { from { opacity: 0; } }
 }
 
 /* ---- SKILLS SECTION (KANBAN STYLE WITHOUT CONTAINER) ---- */
 .skills-section {
   margin-top: 0;
-  margin-bottom: 2.25rem;
+  margin-bottom: var(--space-7);
 }
 
 .skills-header-row {
@@ -1044,17 +1154,19 @@ const loop = `M${nowX - 27} 47C${nowX - 25} 32 ${nowX + 27} 30 ${nowX + 31} 49C$
   }
 }
 
+/* Phones: columns swipe horizontally instead of stacking into one long list */
 @media (max-width: 760px) {
   .kanban-grid {
-    grid-template-columns: repeat(2, minmax(0, 1fr));
-    gap: 0.75rem;
+    grid-template-columns: none;
+    grid-auto-flow: column;
+    grid-auto-columns: 78%;
+    overflow-x: auto;
+    overscroll-behavior-x: contain;
+    scroll-snap-type: x mandatory;
+    padding-bottom: 0.5rem;
   }
-}
-
-@media (max-width: 480px) {
-  .kanban-grid {
-    grid-template-columns: 1fr;
-    gap: 0.75rem;
+  .kanban-column {
+    scroll-snap-align: start;
   }
 }
 
@@ -1150,381 +1262,139 @@ const loop = `M${nowX - 27} 47C${nowX - 25} 32 ${nowX + 27} 30 ${nowX + 31} 49C$
 .pill-icon {
   flex-shrink: 0;
 }
-
-/* ---- ALTERNATE LIST VIEW (STYLE OF PHOTO 3) ---- */
-.rm-figure[hidden],
-.rm-lists[hidden] {
-  display: none !important;
-}
-
-.rm-lists {
-  display: grid;
-  grid-template-columns: repeat(3, minmax(0, 1fr));
-  gap: 2rem;
-  margin: 1.5rem 0 0;
-  background: #FFFFFF;
-  border: 1px solid var(--rail);
-  border-radius: 16px;
-  padding: 1.75rem 2rem;
-  box-shadow: 0 4px 24px rgba(15, 34, 51, 0.06);
-  color: var(--ink);
-}
-
-.rm-list h3 {
-  margin: 0 0 1.25rem;
-  padding-bottom: 0.5rem;
-  border-bottom: 2px solid var(--lane);
-  color: var(--lane-text, var(--lane));
-  font-size: 1.15rem;
-  font-weight: 800;
-  letter-spacing: 0.02em;
-}
-
-.rm-list ul {
-  margin: 0;
-  padding: 0;
-  list-style: none;
-  display: flex;
-  flex-direction: column;
-  gap: 0.35rem;
-}
-
-.rm-list a {
-  display: grid;
-  grid-template-columns: 1.5rem 1fr;
-  align-items: baseline;
-  min-height: 40px;
-  padding: 0.45rem 0.5rem;
-  color: var(--ink);
-  text-decoration: none;
-  border-radius: 6px;
-  transition: all 0.15s ease;
-}
-
-.rm-list a:hover {
-  background: var(--surface-2);
-}
-
-.rm-list a::before {
-  content: '';
-  grid-column: 1;
-  grid-row: 1 / span 2;
-  box-sizing: border-box;
-  width: 10px;
-  height: 10px;
-  border: 2px solid var(--lane);
-  border-radius: 50%;
-  background: #FFFFFF;
-  transition: transform 0.15s ease, background 0.15s ease, box-shadow 0.15s ease;
-}
-
-.rm-learning a::before {
-  border-radius: 3px;
-}
-
-.rm-list a[data-key^='cluster/']::before {
-  width: 18px;
-  border-radius: 999px;
-}
-
-.rm-list a:hover::before {
-  transform: scale(1.2);
-  background: var(--lane);
-}
-
-.rm-list b {
-  grid-column: 2;
-  font-weight: 600;
-  font-size: 0.95rem;
-  color: var(--ink);
-}
-
-.rm-list a:hover b {
-  color: var(--ink);
-  text-decoration: underline;
-}
-
-.rm-list small {
-  grid-column: 2;
-  color: var(--ink-3);
-  font-size: 0.825rem;
-  margin-top: 0.15rem;
-}
-
-/* ---- SKILL FILTER LIGHT UP & DIMMING ---- */
-.rm-station[data-dim] {
-  opacity: 0.15 !important;
-  transition: opacity 0.25s ease;
-}
-
-.rm-label[data-dim] {
-  opacity: 0.1 !important;
-  transition: opacity 0.25s ease;
-}
-
-.rm-connectors.has-skill-active {
-  opacity: 0.18;
-  transition: opacity 0.25s ease;
-}
-
-/* Light up matching station circles on the route map */
-.rm-station.is-skill-match {
-  opacity: 1 !important;
-  z-index: 10;
-}
-
-.rm-station.is-skill-match circle {
-  fill: #FFFFFF !important;
-  stroke: var(--lane) !important;
-  stroke-width: 4.5px !important;
-  filter: drop-shadow(0 0 6px var(--lane));
-}
-
-.rm-station[data-shape='square'].is-skill-match rect {
-  fill: #FFFFFF !important;
-  stroke: var(--lane) !important;
-  stroke-width: 4px !important;
-  filter: drop-shadow(0 0 6px var(--lane));
-}
-
-.rm-station[data-shape='pill'] :is(rect) {
-  fill: #FFFFFF;
-  stroke: var(--lane);
-  stroke-width: 2.5;
-  transition: stroke 0.15s ease, fill 0.15s ease, stroke-width 0.15s ease;
-}
-
-.rm-station[data-shape='pill'] .rm-pill-label {
-  font-size: 11.5px !important;
-  font-weight: 800 !important;
-  fill: #0F172A;
-  pointer-events: none;
-  transition: fill 0.15s ease;
-}
-
-.rm-station[data-shape='pill']:hover :is(rect),
-.rm-station[data-shape='pill'].is-active :is(rect),
-.rm-station[data-shape='pill'].is-skill-match :is(rect) {
-  fill: var(--lane) !important;
-  stroke: #FFFFFF !important;
-  stroke-width: 3px !important;
-  filter: drop-shadow(0 0 8px var(--lane)) !important;
-}
-
-.rm-station[data-shape='pill']:hover .rm-pill-label,
-.rm-station[data-shape='pill'].is-active .rm-pill-label,
-.rm-station[data-shape='pill'].is-skill-match .rm-pill-label {
-  fill: #FFFFFF !important;
-}
-
-.rm-station[data-shape='pill']:hover ~ .rm-marker,
-.rm-station[data-shape='pill'].is-active ~ .rm-marker {
-  opacity: 0 !important;
-}
-
-.rm-label.is-skill-match {
-  fill: #0F172A !important;
-  font-weight: 800 !important;
-  opacity: 1 !important;
-}
-
-/* Light up matching items in list down view */
-.rm-list li[data-dim] {
-  opacity: 0.25;
-  transition: opacity 0.25s ease;
-}
-
-.rm-list li.is-skill-match a::before {
-  transform: scale(1.3);
-  background: var(--lane);
-  box-shadow: 0 0 8px var(--lane);
-}
-
-.rm-list li.is-skill-match b {
-  color: var(--ink);
-  font-weight: 700;
-  text-decoration: underline;
-}
-
-@media (max-width: 899px) {
-  .rm-svg text { display: none; }
-  .rm-lists { grid-template-columns: 1fr; gap: 2rem; }
-}
-@media (max-width: 899px), (pointer: coarse) {
-  .rm-station a { pointer-events: none; }
-}
-
-@media (prefers-reduced-motion: no-preference) {
-  .rm-wipe { stroke-dasharray: 1; animation: rm-wipe 1.1s cubic-bezier(0.3, 0, 0.2, 1) 0.15s backwards; }
-  .rm-station { animation: rm-pop 0.28s ease-out var(--d, 0ms) backwards; }
-  .rm-label { animation: rm-fade 0.28s ease-out var(--d, 0ms) backwards; }
-  .rm-connectors { animation: rm-fade 0.35s ease-out 1.4s backwards; }
-  .rm-now { animation: rm-fade 0.35s ease-out 1.3s backwards; }
-  .rm-loop { stroke-dasharray: 1; animation: rm-wipe 0.5s ease-out 1.45s backwards; }
-  .rm-marker.is-moving { transition: transform 0.26s cubic-bezier(0.2, 0.8, 0.2, 1); }
-  @keyframes rm-wipe { from { stroke-dashoffset: 1; } }
-  @keyframes rm-pop { from { opacity: 0; } }
-  @keyframes rm-fade { from { opacity: 0; } }
-}
 </style>
 
 <script>
 function initRouteMap() {
   const root = document.querySelector<HTMLElement>('[data-route-map]');
+  if (!root || root.dataset.initialized === 'true') return;
+  root.dataset.initialized = 'true';
 
-  if (root && root.dataset.initialized !== 'true') {
-    root.dataset.initialized = 'true';
+  const status = root.querySelector<HTMLElement>('[data-rm="status"]')!;
+  const chips = root.querySelector<HTMLElement>('[data-rm="chips"]')!;
+  const frame = root.querySelector<HTMLElement>('[data-jr-frame]')!;
+  const scroller = root.querySelector<HTMLElement>('[data-jr-scroll]')!;
+  const pop = root.querySelector<HTMLElement>('[data-jr-pop]')!;
+  const links = [...frame.querySelectorAll<HTMLAnchorElement>('.jr-link')];
+  const filterables = [...root.querySelectorAll<HTMLElement>('.jr-link, .jm-link')];
 
-    const caption = root.querySelector<HTMLElement>('[data-rm="caption"]')!;
-    const status = root.querySelector<HTMLElement>('[data-rm="status"]')!;
-    const chips = root.querySelector<HTMLElement>('[data-rm="chips"]')!;
-    const marker = root.querySelector<SVGGElement>('.rm-marker')!;
-    const stations = [...root.querySelectorAll<SVGGElement>('.rm-station')];
-    const rows = [...root.querySelectorAll<HTMLElement>('.rm-list li')];
-    const fallback = caption.textContent ?? '';
+  // ---- Popover and related highlighting (desktop map) ----
+  let active: HTMLAnchorElement | undefined;
+  let timer = 0;
 
-    let active: SVGGElement | undefined;
-    let timer = 0;
+  const hide = () => {
+    active?.classList.remove('is-active');
+    active = undefined;
+    for (const l of links) l.classList.remove('is-related');
+    frame.classList.remove('has-focus');
+    pop.hidden = true;
+  };
 
-    const show = (key: string) => {
-      const s = stations.find((x) => x.dataset.key === key);
-      if (!s) return;
-      clearTimeout(timer);
-      active?.classList.remove('is-active');
-      active = s;
-      s.classList.add('is-active');
-      if (s.dataset.shape === 'pill') {
-        marker.classList.remove('is-on', 'is-moving');
-      } else {
-        marker.style.setProperty('--mx', s.dataset.x!);
-        marker.style.setProperty('--my', s.dataset.y!);
-        const first = !marker.classList.contains('is-on');
-        marker.classList.add('is-on');
-        if (first) requestAnimationFrame(() => marker.classList.add('is-moving'));
-      }
-      caption.textContent = s.dataset.caption!;
-    };
+  const show = (a: HTMLAnchorElement) => {
+    clearTimeout(timer);
+    if (active === a) return;
+    hide();
+    active = a;
+    a.classList.add('is-active');
+    const related = (a.dataset.related ?? '').split(' ').filter(Boolean);
+    for (const l of links) l.classList.toggle('is-related', related.includes(l.dataset.key!));
+    frame.classList.add('has-focus');
 
-    const hide = () => {
-      active?.classList.remove('is-active');
-      active = undefined;
-      marker.classList.remove('is-on', 'is-moving');
-      caption.textContent = fallback;
-    };
+    pop.querySelector('[data-pop="title"]')!.textContent = a.dataset.title ?? '';
+    pop.querySelector('[data-pop="meta"]')!.textContent = a.dataset.meta ?? '';
+    pop.querySelector('[data-pop="skills"]')!.replaceChildren(
+      ...(a.dataset.top ?? '').split('|').filter(Boolean).map((skill) => {
+        const li = document.createElement('li');
+        li.textContent = skill;
+        return li;
+      }),
+    );
+    pop.hidden = false;
 
-    const keyOf = (e: Event) => (e.target as Element).closest<HTMLElement | SVGElement>('[data-key]')?.dataset.key;
+    const f = frame.getBoundingClientRect();
+    const r = a.querySelector('.jr-mark')!.getBoundingClientRect();
+    const half = pop.offsetWidth / 2;
+    const x = Math.min(Math.max(r.left + r.width / 2 - f.left, half), f.width - half);
+    pop.style.left = `${x}px`;
+    pop.style.top = `${r.top - f.top}px`;
+  };
 
-    const settle = () => {
-      const f = document.activeElement?.closest<HTMLElement>('[data-key]');
-      const el = f && root.contains(f) ? f : root.querySelector<HTMLElement | SVGElement>('[data-key]:hover');
-      if (el?.dataset.key) show(el.dataset.key);
-      else hide();
-    };
+  const settle = () => {
+    const focused = document.activeElement?.closest<HTMLAnchorElement>('.jr-link');
+    const el = focused && frame.contains(focused) ? focused : frame.querySelector<HTMLAnchorElement>('.jr-link:hover');
+    if (el) show(el);
+    else hide();
+  };
 
-    for (const [enter, leave] of [['pointerover', 'pointerout'], ['focusin', 'focusout']]) {
-      root.addEventListener(enter, (e) => {
-        const k = keyOf(e);
-        if (k) show(k);
-      });
-      root.addEventListener(leave, () => {
-        clearTimeout(timer);
-        timer = window.setTimeout(settle, 80);
-      });
-    }
-
-    // Tab switching between Route Map and List View
-    const tabs = root.querySelectorAll<HTMLButtonElement>('.rm-tab-btn');
-    const panelMap = root.querySelector<HTMLElement>('#panel-map');
-    const panelList = root.querySelector<HTMLElement>('#panel-list');
-
-    tabs.forEach((tab) => {
-      tab.addEventListener('click', () => {
-        const view = tab.dataset.view;
-        tabs.forEach((t) => {
-          const isActive = t === tab;
-          t.classList.toggle('is-active', isActive);
-          t.setAttribute('aria-selected', String(isActive));
-        });
-        if (view === 'map') {
-          if (panelMap) panelMap.hidden = false;
-          if (panelList) panelList.hidden = true;
-        } else {
-          if (panelMap) panelMap.hidden = true;
-          if (panelList) panelList.hidden = false;
-        }
-      });
+  for (const [enter, leave] of [['pointerover', 'pointerout'], ['focusin', 'focusout']] as const) {
+    frame.addEventListener(enter, (e) => {
+      const a = (e.target as Element).closest<HTMLAnchorElement>('.jr-link');
+      if (a) show(a);
     });
-
-    // View all skills toggle button
-    const toggleSkillsBtn = root.querySelector<HTMLButtonElement>('[data-action="toggle-skills"]');
-    const kanbanGrid = root.querySelector<HTMLElement>('.kanban-grid');
-    if (toggleSkillsBtn && kanbanGrid) {
-      toggleSkillsBtn.addEventListener('click', () => {
-        const isExpanded = kanbanGrid.classList.toggle('is-expanded');
-        toggleSkillsBtn.setAttribute('aria-expanded', String(isExpanded));
-        const span = toggleSkillsBtn.querySelector<HTMLElement>('.toggle-text');
-        if (span) {
-          span.textContent = isExpanded ? 'Show less' : 'View all skills';
-        }
-      });
-    }
-
-    // Skill filter (Multi-select)
-    const selectedSkills = new Set<string>();
-
-    chips.addEventListener('click', (e) => {
-      const b = (e.target as Element).closest<HTMLButtonElement>('button[data-skill]');
-      if (!b) return;
-      const sk = b.dataset.skill!;
-      if (selectedSkills.has(sk)) {
-        selectedSkills.delete(sk);
-      } else {
-        selectedSkills.add(sk);
-      }
-
-      for (const x of chips.querySelectorAll<HTMLButtonElement>('button[data-skill]')) {
-        const isSelected = selectedSkills.has(x.dataset.skill!);
-        x.setAttribute('aria-pressed', String(isSelected));
-      }
-
-      const isFiltering = selectedSkills.size > 0;
-      const has = (el: HTMLElement | SVGElement) => {
-        if (!isFiltering) return true;
-        const entrySkills = (el.dataset.skills ?? '').split(' ').filter(Boolean);
-        return entrySkills.some((s) => selectedSkills.has(s));
-      };
-
-      // Route Map Stations & Labels: light up matching stations, dim non-matching
-      for (const s of stations) {
-        const match = has(s);
-        s.toggleAttribute('data-dim', isFiltering && !match);
-        s.classList.toggle('is-skill-match', isFiltering && match);
-      }
-      for (const m of root.querySelectorAll<SVGElement>('.rm-label')) {
-        const match = has(m);
-        m.toggleAttribute('data-dim', isFiltering && !match);
-        m.classList.toggle('is-skill-match', isFiltering && match);
-      }
-      root.querySelector('.rm-connectors')?.classList.toggle('has-skill-active', isFiltering);
-
-      // List View Items: light up matching items, dim non-matching
-      let shown = 0;
-      for (const li of rows) {
-        const match = has(li);
-        li.toggleAttribute('data-dim', isFiltering && !match);
-        li.classList.toggle('is-skill-match', isFiltering && match);
-        if (match) shown++;
-      }
-      for (const list of root.querySelectorAll<HTMLElement>('.rm-list')) {
-        const hasVisible = list.querySelector('li:not([data-dim])');
-        list.classList.toggle('has-no-matches', isFiltering && !hasVisible);
-      }
-
-      status.textContent = isFiltering
-        ? `Showing ${shown} entries matching ${selectedSkills.size} selected skill${selectedSkills.size > 1 ? 's' : ''}.`
-        : 'Showing all entries.';
+    frame.addEventListener(leave, () => {
+      clearTimeout(timer);
+      timer = window.setTimeout(settle, 80);
     });
   }
+  frame.addEventListener('keydown', (e) => {
+    if (e.key === 'Escape') hide();
+  });
+
+  // ---- Fade the edges only while there is more map to scroll to ----
+  const updateEdges = () => {
+    const max = scroller.scrollWidth - scroller.clientWidth;
+    scroller.classList.toggle('can-scroll-left', scroller.scrollLeft > 1);
+    scroller.classList.toggle('can-scroll-right', scroller.scrollLeft < max - 1);
+  };
+  scroller.addEventListener('scroll', () => {
+    hide();
+    updateEdges();
+  }, { passive: true });
+  window.addEventListener('resize', updateEdges);
+  updateEdges();
+
+  // ---- View all skills toggle ----
+  const toggleSkillsBtn = root.querySelector<HTMLButtonElement>('[data-action="toggle-skills"]');
+  const kanbanGrid = root.querySelector<HTMLElement>('.kanban-grid');
+  if (toggleSkillsBtn && kanbanGrid) {
+    toggleSkillsBtn.addEventListener('click', () => {
+      const isExpanded = kanbanGrid.classList.toggle('is-expanded');
+      toggleSkillsBtn.setAttribute('aria-expanded', String(isExpanded));
+      const span = toggleSkillsBtn.querySelector<HTMLElement>('.toggle-text');
+      if (span) span.textContent = isExpanded ? 'Show less' : 'View all skills';
+    });
+  }
+
+  // ---- Skill filter (multi-select): dims and lights up stops in both layouts ----
+  const selectedSkills = new Set<string>();
+
+  chips.addEventListener('click', (e) => {
+    const b = (e.target as Element).closest<HTMLButtonElement>('button[data-skill]');
+    if (!b) return;
+    const sk = b.dataset.skill!;
+    if (selectedSkills.has(sk)) selectedSkills.delete(sk);
+    else selectedSkills.add(sk);
+
+    for (const x of chips.querySelectorAll<HTMLButtonElement>('button[data-skill]')) {
+      x.setAttribute('aria-pressed', String(selectedSkills.has(x.dataset.skill!)));
+    }
+
+    const isFiltering = selectedSkills.size > 0;
+    const has = (el: HTMLElement) =>
+      !isFiltering || (el.dataset.skills ?? '').split(' ').some((s) => selectedSkills.has(s));
+
+    for (const el of filterables) {
+      const match = has(el);
+      el.toggleAttribute('data-dim', isFiltering && !match);
+      el.classList.toggle('is-skill-match', isFiltering && match);
+    }
+
+    // Count from one layout only, so nothing is double counted
+    const shown = links.filter(has).length;
+    status.textContent = isFiltering
+      ? `Showing ${shown} of ${links.length} stops matching ${selectedSkills.size} selected skill${selectedSkills.size > 1 ? 's' : ''}.`
+      : 'Showing all stops.';
+  });
 }
 
 initRouteMap();
